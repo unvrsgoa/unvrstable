@@ -288,8 +288,8 @@ export default function ReservationMap() {
                   top: pct(290, H),
                   left: "50%",
                   transform: "translateX(-50%)",
-                  width: pct(162, W),
-                  height: pct(162, H),
+                  width: pct(110, W),
+                  height: pct(110, H),
                   fontSize: "min(1.4vw, 11px)",
                 }}
               >
