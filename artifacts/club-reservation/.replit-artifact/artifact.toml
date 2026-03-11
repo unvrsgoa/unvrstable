@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "DJ Chetas Night - Table Reservation"
+version = "1.0.0"
+id = "artifacts/club-reservation"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+localPort = 24297
+name = "web"
+paths = ["/"]
+
+[services.development]
+run = "pnpm --filter @workspace/club-reservation run dev"
+
+[services.env]
+PORT = "24297"
+BASE_PATH = "/"
+
+[services.production]
+build = ["pnpm", "--filter", "@workspace/club-reservation", "run", "build"]
+publicDir = "artifacts/club-reservation/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
