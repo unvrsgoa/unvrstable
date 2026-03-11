@@ -257,13 +257,19 @@ export default function ReservationMap() {
                 DJ table
               </div>
 
-              {/* Performance stage vertical label */}
+              {/* Performance stage vertical label — centered between inner F columns */}
               <div
                 className="absolute flex items-center justify-center bg-gray-100 border border-gray-300 rounded"
-                style={{ top: pct(124, H), left: pct(258, W), width: pct(38, W), height: pct(200, H) }}
+                style={{
+                  top: pct(124, H),
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: pct(42, W),
+                  height: pct(218, H),
+                }}
               >
                 <span
-                  className="text-gray-500 font-bold tracking-widest"
+                  className="text-gray-500 font-bold tracking-widest select-none"
                   style={{
                     writingMode: "vertical-rl",
                     transform: "rotate(180deg)",
@@ -275,12 +281,15 @@ export default function ReservationMap() {
                 </span>
               </div>
 
-              {/* Lift stage circle */}
+              {/* Lift stage circle — centered horizontally and vertically in floor */}
               <div
-                className="absolute flex items-center justify-center rounded-full bg-gray-100 border border-gray-300 text-gray-500 font-semibold text-center"
+                className="absolute flex items-center justify-center rounded-full bg-gray-100 border border-gray-300 text-gray-500 font-semibold text-center select-none"
                 style={{
-                  top: pct(290, H), left: pct(296, W),
-                  width: pct(158, W), height: pct(158, H),
+                  top: pct(290, H),
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: pct(162, W),
+                  height: pct(162, H),
                   fontSize: "min(1.4vw, 11px)",
                 }}
               >
