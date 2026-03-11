@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 type TableStatus = "available" | "sold_out";
 
@@ -22,6 +22,30 @@ const H = 970;
 
 function pct(val: number, total: number) {
   return `${((val / total) * 100).toFixed(3)}%`;
+}
+
+const STORAGE_KEY = "djchetas_table_state";
+
+function loadSaved(): Record<string, { status: TableStatus; price: string }> {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveState(tables: TableDef[]) {
+  const record: Record<string, { status: TableStatus; price: string }> = {};
+  tables.forEach((t) => { record[t.id] = { status: t.status, price: t.price }; });
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(record));
+}
+
+function applyLoaded(tables: TableDef[]): TableDef[] {
+  const saved = loadSaved();
+  return tables.map((t) =>
+    saved[t.id] ? { ...t, status: saved[t.id].status, price: saved[t.id].price } : t
+  );
 }
 
 const GOLD = "#283593";
@@ -113,7 +137,12 @@ interface EditState {
 }
 
 export default function ReservationMap() {
-  const [tables, setTables] = useState<TableDef[]>(TABLES);
+  const [tables, setTables] = useState<TableDef[]>(() => applyLoaded(TABLES));
+
+  useEffect(() => {
+    saveState(tables);
+  }, [tables]);
+
   const [editing, setEditing] = useState<EditState>({ tableId: null, value: "" });
   const [selected, setSelected] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
