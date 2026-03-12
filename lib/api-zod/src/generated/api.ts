@@ -8,9 +8,36 @@
 import * as zod from "zod";
 
 /**
- * Returns server health status
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({
   status: zod.string(),
+});
+
+/**
+ * @summary Get all tables
+ */
+export const GetTablesResponseItem = zod.object({
+  id: zod.string(),
+  status: zod.string(),
+  price: zod.string(),
+});
+export const GetTablesResponse = zod.array(GetTablesResponseItem);
+
+/**
+ * @summary Update a table's status or price
+ */
+export const UpdateTableParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const UpdateTableBody = zod.object({
+  status: zod.string().optional(),
+  price: zod.string().optional(),
+});
+
+export const UpdateTableResponse = zod.object({
+  id: zod.string(),
+  status: zod.string(),
+  price: zod.string(),
 });

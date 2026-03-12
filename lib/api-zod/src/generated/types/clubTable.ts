@@ -6,7 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export * from "./clubTable";
-export * from "./errorResponse";
-export * from "./healthStatus";
-export * from "./updateTable";
+export interface ClubTable {
+  id: string;
+  status: string;
+  price: string;
+}

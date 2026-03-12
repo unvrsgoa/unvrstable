@@ -1,6 +1,5 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
   description: API specification
@@ -10,13 +9,14 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: tables
+    description: Club table reservation
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +24,53 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /tables:
+    get:
+      operationId: getTables
+      tags: [tables]
+      summary: Get all tables
+      responses:
+        "200":
+          description: List of tables
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ClubTable"
+
+  /tables/{id}:
+    patch:
+      operationId: updateTable
+      tags: [tables]
+      summary: Update a table's status or price
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTable"
+      responses:
+        "200":
+          description: Updated table
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ClubTable"
+        "404":
+          description: Table not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +81,32 @@ components:
       required:
         - status
 
+    ClubTable:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        price:
+          type: string
+      required:
+        - id
+        - status
+        - price
+
+    UpdateTable:
+      type: object
+      properties:
+        status:
+          type: string
+        price:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error

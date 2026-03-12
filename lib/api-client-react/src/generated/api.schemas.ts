@@ -8,3 +8,18 @@
 export interface HealthStatus {
   status: string;
 }
+
+export interface ClubTable {
+  id: string;
+  status: string;
+  price: string;
+}
+
+export interface UpdateTable {
+  status?: string;
+  price?: string;
+}
+
+export interface ErrorResponse {
+  error: string;
+}
