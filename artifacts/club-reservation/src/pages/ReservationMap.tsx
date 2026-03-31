@@ -32,8 +32,11 @@ const VIP_BOOTH = "#B8860B";
 const F_TABLE = "#C2185B";
 const S_TABLE = "#2E7D32";
 const D_TABLE = "#4527A0";
+const PLATINUM = "#546E7A";
 
 const LAYOUT: TableDef[] = [
+  { id: "platinum1", label: "PLATINUM 1", bgColor: PLATINUM, left: 145, top: 55, width: 125, height: 35 },
+  { id: "platinum2", label: "PLATINUM 2", bgColor: PLATINUM, left: 480, top: 55, width: 125, height: 35 },
   { id: "gold1", label: "GOLD-1",      bgColor: GOLD,     left: 18,  top: 130, width: 68, height: 45 },
   { id: "gold2", label: "GOLD-2",      bgColor: GOLD,     left: 95,  top: 130, width: 68, height: 45 },
   { id: "gold3", label: "GOLD-3\nVIP", bgColor: VIP_GOLD, left: 175, top: 130, width: 68, height: 45 },
@@ -378,6 +381,7 @@ export default function ReservationMap() {
       {/* Legend */}
       <div className="flex justify-center gap-5 mt-6 flex-wrap">
         {[
+          { color: PLATINUM, label: "Platinum Tables" },
           { color: GOLD, label: "Gold Tables" },
           { color: VIP_GOLD, label: "VIP Gold" },
           { color: VIP_BOOTH, label: "VIP Booths" },

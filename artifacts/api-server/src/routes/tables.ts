@@ -5,6 +5,8 @@ import { eq } from "drizzle-orm";
 const router: IRouter = Router();
 
 const DEFAULT_TABLES: Array<{ id: string; status: string; price: string }> = [
+  { id: "platinum1", status: "available", price: "2 LAC" },
+  { id: "platinum2", status: "available", price: "2 LAC" },
   { id: "gold1", status: "available", price: "1.5 LAC" },
   { id: "gold2", status: "available", price: "2 LAC" },
   { id: "gold3", status: "available", price: "3 LAC" },
@@ -61,10 +63,7 @@ const DEFAULT_TABLES: Array<{ id: string; status: string; price: string }> = [
 ];
 
 async function seedIfEmpty() {
-  const existing = await db.select().from(clubTablesTable).limit(1);
-  if (existing.length === 0) {
-    await db.insert(clubTablesTable).values(DEFAULT_TABLES);
-  }
+  await db.insert(clubTablesTable).values(DEFAULT_TABLES).onConflictDoNothing();
 }
 
 seedIfEmpty().catch(console.error);
