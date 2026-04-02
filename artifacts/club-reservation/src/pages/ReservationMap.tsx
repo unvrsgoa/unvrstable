@@ -93,9 +93,9 @@ const LAYOUT: TableDef[] = [
   { id: "d6",  label: "D-6",  bgColor: D_TABLE, left: 435, top: 706, width: 54, height: 44 },
   { id: "d7",  label: "D-7",  bgColor: D_TABLE, left: 493, top: 706, width: 54, height: 44 },
   { id: "d8",  label: "D-8",  bgColor: D_TABLE, left: 551, top: 706, width: 54, height: 44 },
-  { id: "d9",  label: "D-9",  bgColor: D_TABLE, left: 493, top: 758, width: 54, height: 44 },
-  { id: "d10", label: "D-10", bgColor: D_TABLE, left: 551, top: 758, width: 54, height: 44 },
-  { id: "rd1", label: "RD-1", bgColor: "#8B6914", left: 252, top: 815, width: 108, height: 64 },
+  { id: "d9",  label: "D-9",  bgColor: D_TABLE, left: 493, top: 778, width: 54, height: 44 },
+  { id: "d10", label: "D-10", bgColor: D_TABLE, left: 551, top: 778, width: 54, height: 44 },
+  { id: "rd1", label: "RD-1", bgColor: "#8B6914", left: 252, top: 835, width: 108, height: 64 },
 ];
 
 interface EditState {
