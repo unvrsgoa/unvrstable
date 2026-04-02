@@ -80,16 +80,22 @@ const LAYOUT: TableDef[] = [
   { id: "f17", label: "F-17", bgColor: F_TABLE, left: 480, top: 308, width: 48, height: 40 },
   { id: "f18", label: "F-18", bgColor: F_TABLE, left: 480, top: 365, width: 48, height: 40 },
   { id: "f19", label: "F-19", bgColor: F_TABLE, left: 480, top: 422, width: 48, height: 40 },
-  { id: "f26", label: "F-26", bgColor: F_TABLE, left: 540, top: 700, width: 48, height: 40 },
   { id: "s1",  label: "S1",   bgColor: S_TABLE, left: 302, top: 417, width: 54, height: 44 },
   { id: "s2",  label: "S2",   bgColor: S_TABLE, left: 375, top: 417, width: 54, height: 44 },
   { id: "s5",  label: "S5",   bgColor: S_TABLE, left: 338, top: 471, width: 54, height: 44 },
   { id: "s3",  label: "S3",   bgColor: S_TABLE, left: 302, top: 526, width: 54, height: 44 },
   { id: "s4",  label: "S4",   bgColor: S_TABLE, left: 375, top: 526, width: 54, height: 44 },
-  { id: "d01", label: "D-01", bgColor: D_TABLE, left: 212, top: 706, width: 68, height: 50 },
-  { id: "d02", label: "D-02", bgColor: D_TABLE, left: 296, top: 706, width: 68, height: 50 },
-  { id: "d03", label: "D-03", bgColor: D_TABLE, left: 380, top: 706, width: 68, height: 50 },
-  { id: "rd1", label: "RD-1", bgColor: "#8B6914", left: 252, top: 790, width: 108, height: 64 },
+  { id: "d1",  label: "D-1",  bgColor: D_TABLE, left: 145, top: 706, width: 54, height: 44 },
+  { id: "d2",  label: "D-2",  bgColor: D_TABLE, left: 203, top: 706, width: 54, height: 44 },
+  { id: "d3",  label: "D-3",  bgColor: D_TABLE, left: 261, top: 706, width: 54, height: 44 },
+  { id: "d4",  label: "D-4",  bgColor: D_TABLE, left: 319, top: 706, width: 54, height: 44 },
+  { id: "d5",  label: "D-5",  bgColor: D_TABLE, left: 377, top: 706, width: 54, height: 44 },
+  { id: "d6",  label: "D-6",  bgColor: D_TABLE, left: 435, top: 706, width: 54, height: 44 },
+  { id: "d7",  label: "D-7",  bgColor: D_TABLE, left: 493, top: 706, width: 54, height: 44 },
+  { id: "d8",  label: "D-8",  bgColor: D_TABLE, left: 551, top: 706, width: 54, height: 44 },
+  { id: "d9",  label: "D-9",  bgColor: D_TABLE, left: 493, top: 758, width: 54, height: 44 },
+  { id: "d10", label: "D-10", bgColor: D_TABLE, left: 551, top: 758, width: 54, height: 44 },
+  { id: "rd1", label: "RD-1", bgColor: "#8B6914", left: 252, top: 815, width: 108, height: 64 },
 ];
 
 interface EditState {
@@ -177,8 +183,9 @@ export default function ReservationMap() {
     setSelected(id === selected ? null : id);
   };
 
-  const availableCount = Object.values(tableData).filter((t) => t.status === "available").length;
-  const soldOutCount = Object.values(tableData).filter((t) => t.status === "sold_out").length;
+  const layoutIds = new Set(LAYOUT.map((t) => t.id));
+  const availableCount = Object.values(tableData).filter((t) => layoutIds.has(t.id) && t.status === "available").length;
+  const soldOutCount = Object.values(tableData).filter((t) => layoutIds.has(t.id) && t.status === "sold_out").length;
   const selectedLayout = LAYOUT.find((t) => t.id === selected);
   const selectedData = selected ? tableData[selected] : null;
 
