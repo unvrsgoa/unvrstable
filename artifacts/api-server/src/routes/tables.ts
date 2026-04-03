@@ -1,10 +1,10 @@
 import { Router, type IRouter } from "express";
 import { db, clubTablesTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { eq, like } from "drizzle-orm";
 
 const router: IRouter = Router();
 
-const DEFAULT_TABLES: Array<{ id: string; status: string; price: string }> = [
+const BASE_TABLES: Array<{ id: string; status: string; price: string }> = [
   { id: "platinum1", status: "available", price: "2 LAC" },
   { id: "platinum2", status: "available", price: "2 LAC" },
   { id: "gold1", status: "available", price: "1.5 LAC" },
@@ -68,16 +68,27 @@ const DEFAULT_TABLES: Array<{ id: string; status: string; price: string }> = [
   { id: "rd1", status: "available", price: "Royal Diamond\n1 LAC" },
 ];
 
-async function seedIfEmpty() {
-  await db.insert(clubTablesTable).values(DEFAULT_TABLES).onConflictDoNothing();
+const EVENTS = ["chetas", "normal"] as const;
+
+async function seedAllEvents() {
+  const rows = EVENTS.flatMap((event) =>
+    BASE_TABLES.map((t) => ({ id: `${event}_${t.id}`, status: t.status, price: t.price }))
+  );
+  await db.insert(clubTablesTable).values(rows).onConflictDoNothing();
 }
 
-seedIfEmpty().catch(console.error);
+seedAllEvents().catch(console.error);
 
-router.get("/tables", async (_req, res) => {
+router.get("/tables", async (req, res) => {
+  const event = (req.query.event as string) || "chetas";
+  const prefix = `${event}_`;
   try {
-    const rows = await db.select().from(clubTablesTable);
-    res.json(rows);
+    const rows = await db
+      .select()
+      .from(clubTablesTable)
+      .where(like(clubTablesTable.id, `${prefix}%`));
+    const stripped = rows.map((r) => ({ ...r, id: r.id.slice(prefix.length) }));
+    res.json(stripped);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to fetch tables" });
@@ -85,7 +96,8 @@ router.get("/tables", async (_req, res) => {
 });
 
 router.patch("/tables/:id", async (req, res) => {
-  const { id } = req.params;
+  const event = (req.query.event as string) || "chetas";
+  const dbId = `${event}_${req.params.id}`;
   const { status, price } = req.body as { status?: string; price?: string };
 
   if (!status && !price) {
@@ -101,14 +113,14 @@ router.patch("/tables/:id", async (req, res) => {
     const [updated] = await db
       .update(clubTablesTable)
       .set(updates)
-      .where(eq(clubTablesTable.id, id))
+      .where(eq(clubTablesTable.id, dbId))
       .returning();
 
     if (!updated) {
       res.status(404).json({ error: "Table not found" });
       return;
     }
-    res.json(updated);
+    res.json({ ...updated, id: req.params.id });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to update table" });

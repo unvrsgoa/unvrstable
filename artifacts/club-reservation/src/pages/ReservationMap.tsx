@@ -105,14 +105,14 @@ interface EditState {
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
-async function fetchTables(): Promise<ApiTable[]> {
-  const res = await fetch(`${BASE}/api/tables`);
+async function fetchTables(event: string): Promise<ApiTable[]> {
+  const res = await fetch(`${BASE}/api/tables?event=${event}`);
   if (!res.ok) throw new Error("Failed to fetch tables");
   return res.json();
 }
 
-async function patchTable(id: string, data: { status?: string; price?: string }): Promise<ApiTable> {
-  const res = await fetch(`${BASE}/api/tables/${id}`, {
+async function patchTable(id: string, data: { status?: string; price?: string }, event: string): Promise<ApiTable> {
+  const res = await fetch(`${BASE}/api/tables/${id}?event=${event}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -121,15 +121,23 @@ async function patchTable(id: string, data: { status?: string; price?: string })
   return res.json();
 }
 
+const EVENT_CONFIG = {
+  chetas: { label: "DJ CHETAS NIGHT", subtitle: "Special Event — Table Reservation Management" },
+  normal: { label: "NORMAL NIGHT",    subtitle: "Regular Night — Table Reservation Management" },
+} as const;
+
+type EventKey = keyof typeof EVENT_CONFIG;
+
 export default function ReservationMap() {
+  const [event, setEvent] = useState<EventKey>("chetas");
   const [tableData, setTableData] = useState<Record<string, ApiTable>>({});
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<EditState>({ tableId: null, value: "" });
   const [selected, setSelected] = useState<string | null>(null);
 
-  const loadTables = useCallback(async () => {
+  const loadTables = useCallback(async (ev: EventKey) => {
     try {
-      const rows = await fetchTables();
+      const rows = await fetchTables(ev);
       const map: Record<string, ApiTable> = {};
       rows.forEach((r) => { map[r.id] = r; });
       setTableData(map);
@@ -141,10 +149,18 @@ export default function ReservationMap() {
   }, []);
 
   useEffect(() => {
-    loadTables();
-    const interval = setInterval(loadTables, 5000);
+    setLoading(true);
+    setTableData({});
+    setSelected(null);
+    setEditing({ tableId: null, value: "" });
+    loadTables(event);
+    const interval = setInterval(() => loadTables(event), 5000);
     return () => clearInterval(interval);
-  }, [loadTables]);
+  }, [event, loadTables]);
+
+  const switchEvent = (ev: EventKey) => {
+    if (ev !== event) setEvent(ev);
+  };
 
   const toggleStatus = async (id: string) => {
     const current = tableData[id];
@@ -152,7 +168,7 @@ export default function ReservationMap() {
     const next = current.status === "available" ? "sold_out" : "available";
     setTableData((prev) => ({ ...prev, [id]: { ...current, status: next } }));
     try {
-      const updated = await patchTable(id, { status: next });
+      const updated = await patchTable(id, { status: next }, event);
       setTableData((prev) => ({ ...prev, [id]: updated }));
     } catch {
       setTableData((prev) => ({ ...prev, [id]: current }));
@@ -172,7 +188,7 @@ export default function ReservationMap() {
     if (!current) return;
     setTableData((prev) => ({ ...prev, [tableId]: { ...current, price: value } }));
     try {
-      const updated = await patchTable(tableId, { price: value });
+      const updated = await patchTable(tableId, { price: value }, event);
       setTableData((prev) => ({ ...prev, [tableId]: updated }));
     } catch {
       setTableData((prev) => ({ ...prev, [tableId]: current }));
@@ -202,9 +218,33 @@ export default function ReservationMap() {
 
   return (
     <div className="min-h-screen bg-gray-100 py-6 px-4">
+      {/* Event selector */}
+      <div className="flex justify-center gap-3 mb-5">
+        <button
+          onClick={() => switchEvent("chetas")}
+          className={`px-6 py-2 rounded-full font-bold text-sm uppercase tracking-wide transition-all shadow ${
+            event === "chetas"
+              ? "bg-indigo-700 text-white shadow-indigo-300 scale-105"
+              : "bg-white text-gray-500 border border-gray-300 hover:bg-gray-50"
+          }`}
+        >
+          🎧 DJ Chetas Night
+        </button>
+        <button
+          onClick={() => switchEvent("normal")}
+          className={`px-6 py-2 rounded-full font-bold text-sm uppercase tracking-wide transition-all shadow ${
+            event === "normal"
+              ? "bg-gray-800 text-white shadow-gray-400 scale-105"
+              : "bg-white text-gray-500 border border-gray-300 hover:bg-gray-50"
+          }`}
+        >
+          🎵 Normal Night
+        </button>
+      </div>
+
       <div className="text-center mb-5">
         <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 uppercase">
-          DJ CHETAS NIGHT
+          {EVENT_CONFIG[event].label}
         </h1>
         <p className="text-sm text-gray-500 mt-1">
           Table Reservation Management &mdash; Click any table to select, then toggle status or edit price
