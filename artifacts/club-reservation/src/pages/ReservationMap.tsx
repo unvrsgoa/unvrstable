@@ -27,6 +27,7 @@ function pct(val: number, total: number) {
 }
 
 const GOLD = "#283593";
+const GOLD_STANDY = "#1565C0";
 const VIP_GOLD = "#C62828";
 const VIP_BOOTH = "#B8860B";
 const F_TABLE = "#C2185B";
@@ -96,6 +97,11 @@ const LAYOUT: TableDef[] = [
   { id: "d9",  label: "D-9",  bgColor: D_TABLE, left: 493, top: 778, width: 54, height: 44 },
   { id: "d10", label: "D-10", bgColor: D_TABLE, left: 551, top: 778, width: 54, height: 44 },
   { id: "rd1", label: "RD-1", bgColor: "#8B6914", left: 252, top: 835, width: 108, height: 64 },
+];
+
+const CHETAS_LAYOUT: TableDef[] = [
+  { id: "goldstandy1", label: "GOLD\nSTANDY 1", bgColor: GOLD_STANDY, left: 249, top: 130, width: 100, height: 45 },
+  { id: "goldstandy2", label: "GOLD\nSTANDY 2", bgColor: GOLD_STANDY, left: 373, top: 130, width: 100, height: 45 },
 ];
 
 interface EditState {
@@ -199,10 +205,11 @@ export default function ReservationMap() {
     setSelected(id === selected ? null : id);
   };
 
-  const layoutIds = new Set(LAYOUT.map((t) => t.id));
+  const activeLayout = event === "chetas" ? [...LAYOUT, ...CHETAS_LAYOUT] : LAYOUT;
+  const layoutIds = new Set(activeLayout.map((t) => t.id));
   const availableCount = Object.values(tableData).filter((t) => layoutIds.has(t.id) && t.status === "available").length;
   const soldOutCount = Object.values(tableData).filter((t) => layoutIds.has(t.id) && t.status === "sold_out").length;
-  const selectedLayout = LAYOUT.find((t) => t.id === selected);
+  const selectedLayout = activeLayout.find((t) => t.id === selected);
   const selectedData = selected ? tableData[selected] : null;
 
   if (loading) {
@@ -262,7 +269,7 @@ export default function ReservationMap() {
           <span className="text-sm font-semibold">{soldOutCount} Sold Out</span>
         </div>
         <div className="flex items-center gap-2 bg-white rounded-lg px-4 py-2 shadow-sm border">
-          <span className="text-sm font-semibold">{LAYOUT.length} Total Tables</span>
+          <span className="text-sm font-semibold">{activeLayout.length} Total Tables</span>
         </div>
       </div>
 
@@ -375,7 +382,7 @@ export default function ReservationMap() {
               </div>
 
               {/* Tables */}
-              {LAYOUT.map((t) => {
+              {activeLayout.map((t) => {
                 const data = tableData[t.id];
                 const isSold = data?.status === "sold_out";
                 const isSel = selected === t.id;

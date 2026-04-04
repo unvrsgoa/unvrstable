@@ -70,11 +70,21 @@ const BASE_TABLES: Array<{ id: string; status: string; price: string }> = [
 
 const EVENTS = ["chetas", "normal"] as const;
 
+const CHETAS_ONLY_TABLES: Array<{ id: string; status: string; price: string }> = [
+  { id: "goldstandy1", status: "available", price: "2 LAC" },
+  { id: "goldstandy2", status: "available", price: "2 LAC" },
+];
+
 async function seedAllEvents() {
   const rows = EVENTS.flatMap((event) =>
     BASE_TABLES.map((t) => ({ id: `${event}_${t.id}`, status: t.status, price: t.price }))
   );
-  await db.insert(clubTablesTable).values(rows).onConflictDoNothing();
+  const chetasExtras = CHETAS_ONLY_TABLES.map((t) => ({
+    id: `chetas_${t.id}`,
+    status: t.status,
+    price: t.price,
+  }));
+  await db.insert(clubTablesTable).values([...rows, ...chetasExtras]).onConflictDoNothing();
 }
 
 seedAllEvents().catch(console.error);
