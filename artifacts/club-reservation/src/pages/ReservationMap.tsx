@@ -100,8 +100,8 @@ const LAYOUT: TableDef[] = [
 ];
 
 const CHETAS_LAYOUT: TableDef[] = [
-  { id: "goldstandy1", label: "GOLD\nSTANDY 1", bgColor: GOLD_STANDY, left: 249, top: 130, width: 100, height: 45 },
-  { id: "goldstandy2", label: "GOLD\nSTANDY 2", bgColor: GOLD_STANDY, left: 373, top: 130, width: 100, height: 45 },
+  { id: "goldstandy1", label: "GOLD\nSTANDY 1", bgColor: GOLD_STANDY, left: 255, top: 133, width: 76, height: 38 },
+  { id: "goldstandy2", label: "GOLD\nSTANDY 2", bgColor: GOLD_STANDY, left: 391, top: 133, width: 76, height: 38 },
 ];
 
 interface EditState {
