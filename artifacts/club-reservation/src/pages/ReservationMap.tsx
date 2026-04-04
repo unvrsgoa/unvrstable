@@ -9,6 +9,7 @@ interface ApiTable {
 }
 
 interface TableDef {
+  fontSize?: string;
   id: string;
   label: string;
   bgColor: string;
@@ -100,8 +101,8 @@ const LAYOUT: TableDef[] = [
 ];
 
 const CHETAS_LAYOUT: TableDef[] = [
-  { id: "goldstandy1", label: "GOLD\nSTANDY 1", bgColor: GOLD_STANDY, left: 262, top: 136, width: 58, height: 30 },
-  { id: "goldstandy2", label: "GOLD\nSTANDY 2", bgColor: GOLD_STANDY, left: 402, top: 136, width: 58, height: 30 },
+  { id: "goldstandy1", label: "GOLD\nSTANDY 1", bgColor: GOLD_STANDY, left: 262, top: 136, width: 58, height: 30, fontSize: "min(1vw, 7px)" },
+  { id: "goldstandy2", label: "GOLD\nSTANDY 2", bgColor: GOLD_STANDY, left: 402, top: 136, width: 58, height: 30, fontSize: "min(1vw, 7px)" },
 ];
 
 interface EditState {
@@ -405,7 +406,7 @@ export default function ReservationMap() {
                     >
                       <span
                         className="text-white font-bold leading-tight text-center"
-                        style={{ fontSize: "min(1.4vw, 10px)", lineHeight: 1.2, padding: "1px 2px" }}
+                        style={{ fontSize: t.fontSize ?? "min(1.4vw, 10px)", lineHeight: 1.2, padding: "1px 2px" }}
                       >
                         {t.label.split("\n").map((line, i) => (
                           <span key={i} style={{ display: "block" }}>{line}</span>
