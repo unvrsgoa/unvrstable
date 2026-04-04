@@ -100,10 +100,7 @@ const LAYOUT: TableDef[] = [
   { id: "rd1", label: "RD-1", bgColor: "#8B6914", left: 252, top: 835, width: 108, height: 64 },
 ];
 
-const CHETAS_LAYOUT: TableDef[] = [
-  { id: "goldstandy1", label: "GOLD\nSTANDY 1", bgColor: GOLD_STANDY, left: 262, top: 136, width: 58, height: 30, fontSize: "min(1vw, 7px)" },
-  { id: "goldstandy2", label: "GOLD\nSTANDY 2", bgColor: GOLD_STANDY, left: 402, top: 136, width: 58, height: 30, fontSize: "min(1vw, 7px)" },
-];
+const CHETAS_LAYOUT: TableDef[] = [];
 
 interface EditState {
   tableId: string | null;
