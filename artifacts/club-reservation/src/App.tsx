@@ -5,14 +5,32 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import ReservationMap from "@/pages/ReservationMap";
 import Dashboard from "@/pages/Dashboard";
 import QRScanner from "@/pages/QRScanner";
+import LoginPage from "@/pages/LoginPage";
 
 const queryClient = new QueryClient();
 type Page = "map" | "dashboard" | "scan";
 type EventKey = "chetas" | "normal";
 
 function App() {
+  const [authed, setAuthed] = useState(() => sessionStorage.getItem("tlc_auth") === "1");
   const [page, setPage] = useState<Page>("map");
   const [event, setEvent] = useState<EventKey>("chetas");
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("tlc_auth");
+    setAuthed(false);
+  };
+
+  if (!authed) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <LoginPage onLogin={() => setAuthed(true)} />
+          <Toaster />
+        </TooltipProvider>
+      </QueryClientProvider>
+    );
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -41,30 +59,40 @@ function App() {
                 ))}
               </div>
 
-              {page !== "scan" && (
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setEvent("chetas")}
-                    className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide transition-all shadow-sm ${
-                      event === "chetas"
-                        ? "bg-indigo-700 text-white"
-                        : "bg-white text-gray-500 border border-gray-300 hover:bg-gray-50"
-                    }`}
-                  >
-                    🎧 Chetas
-                  </button>
-                  <button
-                    onClick={() => setEvent("normal")}
-                    className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide transition-all shadow-sm ${
-                      event === "normal"
-                        ? "bg-gray-800 text-white"
-                        : "bg-white text-gray-500 border border-gray-300 hover:bg-gray-50"
-                    }`}
-                  >
-                    🎵 Normal
-                  </button>
-                </div>
-              )}
+              <div className="flex items-center gap-2">
+                {page !== "scan" && (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setEvent("chetas")}
+                      className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide transition-all shadow-sm ${
+                        event === "chetas"
+                          ? "bg-indigo-700 text-white"
+                          : "bg-white text-gray-500 border border-gray-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      🎧 Chetas
+                    </button>
+                    <button
+                      onClick={() => setEvent("normal")}
+                      className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide transition-all shadow-sm ${
+                        event === "normal"
+                          ? "bg-gray-800 text-white"
+                          : "bg-white text-gray-500 border border-gray-300 hover:bg-gray-50"
+                      }`}
+                    >
+                      🎵 Normal
+                    </button>
+                  </div>
+                )}
+
+                <button
+                  onClick={handleLogout}
+                  className="ml-1 px-3 py-1.5 rounded-lg text-xs font-bold text-red-500 border border-red-200 hover:bg-red-50 transition"
+                  title="Logout"
+                >
+                  🔒 Logout
+                </button>
+              </div>
             </div>
           </nav>
 
