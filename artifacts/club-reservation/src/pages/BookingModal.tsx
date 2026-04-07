@@ -63,6 +63,14 @@ function safeBreakdown(b?: string): PaymentEntry[] {
   catch { return []; }
 }
 
+function Label({ children }: { children: React.ReactNode }) {
+  return <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-1">{children}</label>;
+}
+
+function Input({ value, onChange, placeholder, type = "text" }: { value: string | number; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; placeholder?: string; type?: string }) {
+  return <input type={type} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 outline-none" value={value} onChange={onChange} placeholder={placeholder} />;
+}
+
 export default function BookingModal({
   tableId, tableLabel, tablePrice, event,
   mode = "create", existingBooking,
@@ -144,13 +152,6 @@ export default function BookingModal({
     }
   };
 
-  const Label = ({ children }: { children: React.ReactNode }) => (
-    <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-1">{children}</label>
-  );
-
-  const Input = ({ value, onChange, placeholder, type = "text" }: any) => (
-    <input type={type} className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-400 outline-none" value={value} onChange={onChange} placeholder={placeholder} />
-  );
 
   if (phase === "success" && savedBooking) {
     const bd = safeBreakdown(savedBooking.paymentBreakdown);
