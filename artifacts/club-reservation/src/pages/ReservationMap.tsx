@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import BookingModal from "./BookingModal";
+import BookingModal, { type Booking } from "./BookingModal";
 
 type EventKey = "chetas" | "normal";
 
@@ -147,6 +147,8 @@ export default function ReservationMap({ event, onEventChange }: Props) {
   const [editing, setEditing] = useState<EditState>({ tableId: null, value: "" });
   const [selected, setSelected] = useState<string | null>(null);
   const [showBooking, setShowBooking] = useState(false);
+  const [bookingToEdit, setBookingToEdit] = useState<Booking | null>(null);
+  const [loadingEdit, setLoadingEdit] = useState(false);
 
   const loadTables = useCallback(async (ev: EventKey) => {
     try {
@@ -206,6 +208,18 @@ export default function ReservationMap({ event, onEventChange }: Props) {
 
   const handleTableClick = (id: string) => {
     setSelected(id === selected ? null : id);
+    setBookingToEdit(null);
+  };
+
+  const openEditBooking = async () => {
+    if (!selected) return;
+    setLoadingEdit(true);
+    try {
+      const res = await fetch(`${BASE}/api/bookings/by-table/${selected}?event=${event}`);
+      const data = await res.json();
+      setBookingToEdit(data || null);
+    } catch { setBookingToEdit(null); }
+    finally { setLoadingEdit(false); }
   };
 
   const activeLayout = event === "chetas" ? [...LAYOUT, ...CHETAS_LAYOUT] : LAYOUT;
@@ -322,6 +336,15 @@ export default function ReservationMap({ event, onEventChange }: Props) {
             >
               📝 Book Table
             </button>
+            {selectedData.status === "sold_out" && (
+              <button
+                className="px-5 py-2 rounded-lg text-sm font-bold text-white bg-amber-500 hover:bg-amber-600 shadow-sm disabled:opacity-50"
+                onClick={openEditBooking}
+                disabled={loadingEdit}
+              >
+                {loadingEdit ? "Loading…" : "✏️ Edit Booking"}
+              </button>
+            )}
             <button
               className="px-3 py-2 rounded-lg text-sm font-medium bg-gray-100 hover:bg-gray-200 text-gray-700"
               onClick={() => setSelected(null)}
@@ -477,6 +500,19 @@ export default function ReservationMap({ event, onEventChange }: Props) {
           setShowBooking(false);
           if (selectedData.status === "available") toggleStatus(selectedLayout.id);
         }}
+      />
+    )}
+
+    {bookingToEdit && selectedLayout && (
+      <BookingModal
+        mode="edit"
+        existingBooking={bookingToEdit}
+        tableId={selectedLayout.id}
+        tableLabel={selectedLayout.label}
+        tablePrice=""
+        event={event}
+        onClose={() => setBookingToEdit(null)}
+        onSuccess={() => setBookingToEdit(null)}
       />
     )}
     </>

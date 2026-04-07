@@ -13,7 +13,10 @@ export const bookingsTable = pgTable("bookings", {
   paxCount: integer("pax_count").notNull().default(1),
   contactNo: text("contact_no").notNull(),
   paymentMode: text("payment_mode").notNull(),
+  paymentBreakdown: text("payment_breakdown").default("[]"),
   ageGroup: text("age_group").notNull(),
+  tlcCardNo: text("tlc_card_no").default(""),
+  handBandColor: text("hand_band_color").default(""),
   arrived: boolean("arrived").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
