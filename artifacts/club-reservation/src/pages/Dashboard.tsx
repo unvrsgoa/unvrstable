@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import * as XLSX from "xlsx";
 import BookingModal, { type Booking } from "./BookingModal";
+import leelaLogo from "@assets/image_1775535190878.png";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -268,32 +269,58 @@ export default function Dashboard({ event }: Props) {
 
       {/* View booking modal (QR) */}
       {selectedBooking && !editingBooking && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setSelectedBooking(null)}>
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm" onClick={(e) => e.stopPropagation()}>
-            <div className={`p-4 border-b flex justify-between items-center ${selectedBooking.arrived ? "bg-emerald-50" : "bg-gray-50"}`}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setSelectedBooking(null)}>
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden" onClick={(e) => e.stopPropagation()}>
+
+            {/* Dark branding header */}
+            <div className="bg-[#0a0a0f] px-4 py-3 flex items-center justify-between">
               <div>
-                <p className="font-bold text-gray-800">{selectedBooking.guestName}</p>
-                <p className="text-xs font-mono text-indigo-700">{selectedBooking.bookingId}</p>
+                <p className="text-white font-bold text-base leading-tight">{selectedBooking.guestName}</p>
+                <p className="text-xs font-mono text-[#c9a84c] mt-0.5">{selectedBooking.bookingId}</p>
               </div>
               <div className="flex items-center gap-2">
-                <button onClick={() => { setEditingBooking(selectedBooking); setSelectedBooking(null); }} className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold hover:bg-indigo-200">✏️ Edit</button>
-                <button onClick={() => setSelectedBooking(null)} className="text-gray-400 text-2xl leading-none">×</button>
+                <button
+                  onClick={() => { setEditingBooking(selectedBooking); setSelectedBooking(null); }}
+                  className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-bold border border-white/20 transition"
+                >✏️ Edit</button>
+                <button onClick={() => setSelectedBooking(null)} className="text-gray-400 hover:text-white text-2xl leading-none transition">×</button>
               </div>
             </div>
-            <div className="p-4 flex flex-col items-center gap-3">
-              <QRCodeSVG value={selectedBooking.bookingId} size={150} />
+
+            {/* QR + Logo side by side */}
+            <div className="bg-[#111118] px-5 py-4 flex items-center gap-4">
+              {/* QR code in a white frame */}
+              <div className="p-2.5 bg-white rounded-xl shadow-lg flex-shrink-0 border-2" style={{ borderColor: "#c9a84c" }}>
+                <QRCodeSVG value={selectedBooking.bookingId} size={130} />
+              </div>
+
+              {/* Right side: logo + info */}
+              <div className="flex flex-col items-center flex-1 gap-2">
+                <img src={leelaLogo} alt="The Leela Club" className="h-20 w-auto object-contain drop-shadow-[0_0_12px_rgba(201,168,76,0.5)]" />
+                <p className="text-[#c9a84c] text-xs font-bold tracking-widest uppercase text-center" style={{ fontFamily: "serif" }}>The Leela Club</p>
+                <div className="mt-1 text-center">
+                  {selectedBooking.arrived ? (
+                    <span className="bg-emerald-500 text-white text-xs font-bold px-3 py-1 rounded-full">✅ ARRIVED</span>
+                  ) : (
+                    <span className="bg-amber-400 text-white text-xs font-bold px-3 py-1 rounded-full">⏳ PENDING</span>
+                  )}
+                  <p className="text-white/60 text-xs mt-1.5">{selectedBooking.paxCount} Pax • {selectedBooking.bookingDate}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Booking details grid */}
+            <div className="p-4 flex flex-col gap-3">
               <div className="w-full grid grid-cols-2 gap-2 text-xs">
                 {[
                   ["Table", selectedBooking.tableId.toUpperCase()],
-                  ["Date", selectedBooking.bookingDate],
-                  ["Pax", String(selectedBooking.paxCount)],
                   ["Contact", selectedBooking.contactNo],
                   ["Age Group", selectedBooking.ageGroup],
                   ["TLC Card", selectedBooking.tlcCardNo || "—"],
                   ["Total", fmt(selectedBooking.totalPrice)],
                   ["Advance", fmt(selectedBooking.advanceAmount)],
                   ["Balance", fmt(selectedBooking.balanceAmount)],
-                  ["Status", selectedBooking.arrived ? "✅ Arrived" : "⏳ Pending"],
+                  ["Payment", selectedBooking.paymentMode],
                 ].map(([k, v]) => (
                   <div key={k} className="bg-gray-50 rounded p-2">
                     <span className="text-gray-400 block">{k}</span>
