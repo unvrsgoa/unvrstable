@@ -31,7 +31,7 @@ function computeStats(rows: typeof bookingsTable.$inferSelect[]) {
 
   const byHandBand: Record<string, number> = {};
   rows.forEach((b) => {
-    if (b.handBandColor) byHandBand[b.handBandColor] = (byHandBand[b.handBandColor] || 0) + 1;
+    if (b.handBandColor) byHandBand[b.handBandColor] = (byHandBand[b.handBandColor] || 0) + b.paxCount;
   });
 
   return { totalBookings, totalPax, totalAdvance, totalBalance, totalAmount, arrivedCount, byMode, byHandBand };

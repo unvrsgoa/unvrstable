@@ -45,6 +45,10 @@ const HAND_BAND_COLORS: { key: string; bg: string; ring: string }[] = [
   { key: "Pink",   bg: "#ec4899", ring: "#be185d" },
   { key: "Blue",   bg: "#3b82f6", ring: "#1d4ed8" },
   { key: "Silver", bg: "#94a3b8", ring: "#64748b" },
+  { key: "Yellow", bg: "#eab308", ring: "#a16207" },
+  { key: "Orange", bg: "#f97316", ring: "#c2410c" },
+  { key: "Purple", bg: "#a855f7", ring: "#7e22ce" },
+  { key: "Golden", bg: "#d97706", ring: "#92400e" },
 ];
 
 function parsePriceHint(p: string): number {

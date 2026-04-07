@@ -21,6 +21,7 @@ interface Props { event: string; }
 const HAND_BAND_BG: Record<string, string> = {
   Red: "#ef4444", Green: "#22c55e", Black: "#1f2937",
   Pink: "#ec4899", Blue: "#3b82f6", Silver: "#94a3b8",
+  Yellow: "#eab308", Orange: "#f97316", Purple: "#a855f7", Golden: "#d97706",
 };
 
 function safeBreakdown(s?: string | null): { mode: string; amount: number }[] {
@@ -169,21 +170,23 @@ export default function Dashboard({ event }: Props) {
       {/* Hand Band Summary */}
       {stats && Object.keys(stats.byHandBand).length > 0 && (
         <div className="bg-white rounded-xl shadow border p-4 mb-5">
-          <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">🎗️ Hand Band Summary (Color-wise)</h3>
+          <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">🎗️ Hand Band Summary — Pax Count by Color</h3>
           <div className="flex flex-wrap gap-3">
-            {Object.entries(stats.byHandBand).sort((a, b) => b[1] - a[1]).map(([color, count]) => (
+            {Object.entries(stats.byHandBand).sort((a, b) => b[1] - a[1]).map(([color, pax]) => (
               <div
                 key={color}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-white shadow-sm"
+                className="flex flex-col items-center px-5 py-3 rounded-xl text-white shadow-sm min-w-[80px]"
                 style={{ backgroundColor: HAND_BAND_BG[color] || "#6b7280" }}
               >
-                <span className="font-bold text-sm">{color}</span>
-                <span className="text-2xl font-extrabold leading-none">{count}</span>
+                <span className="text-3xl font-extrabold leading-none">{pax}</span>
+                <span className="text-xs font-bold opacity-90 mt-0.5">{color}</span>
+                <span className="text-xs opacity-70">PAX</span>
               </div>
             ))}
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 border text-gray-600">
-              <span className="font-bold text-sm">Total</span>
-              <span className="text-2xl font-extrabold leading-none">{Object.values(stats.byHandBand).reduce((s, n) => s + n, 0)}</span>
+            <div className="flex flex-col items-center px-5 py-3 rounded-xl bg-gray-100 border text-gray-700 min-w-[80px]">
+              <span className="text-3xl font-extrabold leading-none">{Object.values(stats.byHandBand).reduce((s, n) => s + n, 0)}</span>
+              <span className="text-xs font-bold mt-0.5">Total</span>
+              <span className="text-xs text-gray-400">PAX</span>
             </div>
           </div>
         </div>

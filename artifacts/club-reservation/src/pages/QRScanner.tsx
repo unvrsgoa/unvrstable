@@ -129,10 +129,12 @@ export default function QRScanner() {
       {/* Booking found */}
       {booking && (
         <div className={`rounded-2xl border-2 shadow-lg overflow-hidden ${booking.arrived ? "border-emerald-400" : "border-indigo-300"}`}>
+
+          {/* Header */}
           <div className={`p-4 ${booking.arrived ? "bg-emerald-50" : "bg-indigo-50"}`}>
-            <div className="flex justify-between items-start">
+            <div className="flex justify-between items-start mb-3">
               <div>
-                <p className="font-extrabold text-gray-800 text-lg">{booking.guestName}</p>
+                <p className="font-extrabold text-gray-800 text-lg leading-tight">{booking.guestName}</p>
                 <p className="text-xs font-mono text-indigo-700">{booking.bookingId}</p>
               </div>
               {booking.arrived ? (
@@ -141,13 +143,33 @@ export default function QRScanner() {
                 <span className="bg-amber-400 text-white text-xs font-bold px-3 py-1 rounded-full">⏳ PENDING</span>
               )}
             </div>
+
+            {/* Prominent PAX arrival banner */}
+            {booking.arrived ? (
+              <div className="bg-emerald-500 text-white rounded-xl p-3 flex items-center justify-center gap-3">
+                <span className="text-4xl font-extrabold leading-none">{booking.paxCount}</span>
+                <div>
+                  <p className="font-extrabold text-base leading-tight">PAX ARRIVED</p>
+                  <p className="text-xs opacity-80">Check-in complete</p>
+                </div>
+                <span className="text-3xl ml-auto">✅</span>
+              </div>
+            ) : (
+              <div className="bg-indigo-600 text-white rounded-xl p-3 flex items-center justify-center gap-3">
+                <span className="text-4xl font-extrabold leading-none">{booking.paxCount}</span>
+                <div>
+                  <p className="font-extrabold text-base leading-tight">PAX EXPECTED</p>
+                  <p className="text-xs opacity-80">Awaiting check-in</p>
+                </div>
+                <span className="text-3xl ml-auto">👥</span>
+              </div>
+            )}
           </div>
 
           <div className="p-4 grid grid-cols-2 gap-3 text-sm">
             {[
               ["Table", booking.tableId.toUpperCase()],
               ["Date", booking.bookingDate],
-              ["Pax", String(booking.paxCount)],
               ["Contact", booking.contactNo],
               ["Age Group", booking.ageGroup],
               ["Payment", booking.paymentMode],
@@ -165,8 +187,8 @@ export default function QRScanner() {
           <div className="p-4 pt-0 flex gap-3">
             <button onClick={() => { setBooking(null); setNotFound(false); setManualId(""); }} className="flex-1 py-2 border rounded-lg text-sm text-gray-600 hover:bg-gray-50 font-medium">Clear</button>
             {!booking.arrived && (
-              <button onClick={markArrived} disabled={arriving} className="flex-1 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-sm disabled:opacity-50">
-                {arriving ? "Marking…" : "✅ Mark as ARRIVED"}
+              <button onClick={markArrived} disabled={arriving} className="flex-2 px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-sm disabled:opacity-50">
+                {arriving ? "Marking…" : `✅ CHECK IN ${booking.paxCount} PAX`}
               </button>
             )}
           </div>
