@@ -36,6 +36,7 @@ export default function Dashboard({ event }: Props) {
   const [search, setSearch] = useState("");
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
+  const [showGeneralEntry, setShowGeneralEntry] = useState(false);
   const [loading, setLoading] = useState(true);
   const [wiping, setWiping] = useState(false);
 
@@ -115,7 +116,13 @@ export default function Dashboard({ event }: Props) {
         <h2 className="text-2xl font-extrabold text-gray-800">
           📊 Dashboard — {event === "chetas" ? "DJ Chetas Night" : "Normal Night"}
         </h2>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setShowGeneralEntry(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 shadow-sm"
+          >
+            🚪 General Entry
+          </button>
           <button onClick={exportToExcel} className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-700 shadow-sm">
             📥 Export Excel
           </button>
@@ -327,6 +334,18 @@ export default function Dashboard({ event }: Props) {
           event={editingBooking.event}
           onClose={() => setEditingBooking(null)}
           onSuccess={() => { setEditingBooking(null); load(); }}
+        />
+      )}
+
+      {/* General Entry booking modal */}
+      {showGeneralEntry && (
+        <BookingModal
+          tableId="general_entry"
+          tableLabel="GENERAL ENTRY"
+          tablePrice=""
+          event={event}
+          onClose={() => setShowGeneralEntry(false)}
+          onSuccess={() => { setShowGeneralEntry(false); load(); }}
         />
       )}
     </div>
