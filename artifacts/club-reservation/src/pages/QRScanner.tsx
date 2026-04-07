@@ -40,29 +40,34 @@ export default function QRScanner() {
   };
 
   const startScanner = async () => {
-    const { Html5QrcodeScanner } = await import("html5-qrcode");
+    const { Html5Qrcode } = await import("html5-qrcode");
     setScanning(true);
-    setTimeout(() => {
-      if (!containerRef.current) return;
-      scannerRef.current = new Html5QrcodeScanner(
-        "qr-scanner-box",
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        false
-      );
-      scannerRef.current.render(
+    // Small delay so the container div mounts before we attach
+    await new Promise((r) => setTimeout(r, 80));
+    if (!containerRef.current) return;
+    try {
+      const scanner = new Html5Qrcode("qr-scanner-box");
+      scannerRef.current = scanner;
+      await scanner.start(
+        { facingMode: "environment" },
+        { fps: 12, qrbox: { width: 240, height: 240 } },
         (text: string) => {
           stopScanner();
           lookupBooking(text);
         },
         () => {}
       );
-    }, 100);
+    } catch (err) {
+      console.error("Camera failed to start:", err);
+      setScanning(false);
+    }
   };
 
   const stopScanner = () => {
     if (scannerRef.current) {
-      scannerRef.current.clear().catch(() => {});
-      scannerRef.current = null;
+      scannerRef.current.stop()
+        .then(() => { scannerRef.current?.clear(); scannerRef.current = null; })
+        .catch(() => { scannerRef.current = null; });
     }
     setScanning(false);
   };
