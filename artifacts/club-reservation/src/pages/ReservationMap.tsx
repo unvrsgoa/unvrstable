@@ -1,4 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
+import BookingModal from "./BookingModal";
+
+type EventKey = "chetas" | "normal";
 
 type TableStatus = "available" | "sold_out";
 
@@ -133,14 +136,17 @@ const EVENT_CONFIG = {
   normal: { label: "NORMAL NIGHT",    subtitle: "Regular Night — Table Reservation Management" },
 } as const;
 
-type EventKey = keyof typeof EVENT_CONFIG;
+interface Props {
+  event: EventKey;
+  onEventChange: (ev: EventKey) => void;
+}
 
-export default function ReservationMap() {
-  const [event, setEvent] = useState<EventKey>("chetas");
+export default function ReservationMap({ event, onEventChange }: Props) {
   const [tableData, setTableData] = useState<Record<string, ApiTable>>({});
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<EditState>({ tableId: null, value: "" });
   const [selected, setSelected] = useState<string | null>(null);
+  const [showBooking, setShowBooking] = useState(false);
 
   const loadTables = useCallback(async (ev: EventKey) => {
     try {
@@ -164,10 +170,6 @@ export default function ReservationMap() {
     const interval = setInterval(() => loadTables(event), 5000);
     return () => clearInterval(interval);
   }, [event, loadTables]);
-
-  const switchEvent = (ev: EventKey) => {
-    if (ev !== event) setEvent(ev);
-  };
 
   const toggleStatus = async (id: string) => {
     const current = tableData[id];
@@ -225,11 +227,12 @@ export default function ReservationMap() {
   }
 
   return (
+    <>
     <div className="min-h-screen bg-gray-100 py-6 px-4">
       {/* Event selector */}
       <div className="flex justify-center gap-3 mb-5">
         <button
-          onClick={() => switchEvent("chetas")}
+          onClick={() => onEventChange("chetas")}
           className={`px-6 py-2 rounded-full font-bold text-sm uppercase tracking-wide transition-all shadow ${
             event === "chetas"
               ? "bg-indigo-700 text-white shadow-indigo-300 scale-105"
@@ -239,7 +242,7 @@ export default function ReservationMap() {
           🎧 DJ Chetas Night
         </button>
         <button
-          onClick={() => switchEvent("normal")}
+          onClick={() => onEventChange("normal")}
           className={`px-6 py-2 rounded-full font-bold text-sm uppercase tracking-wide transition-all shadow ${
             event === "normal"
               ? "bg-gray-800 text-white shadow-gray-400 scale-105"
@@ -312,6 +315,12 @@ export default function ReservationMap() {
               onClick={() => toggleStatus(selectedLayout.id)}
             >
               {selectedData.status === "available" ? "Mark Sold Out" : "Mark Available"}
+            </button>
+            <button
+              className="px-5 py-2 rounded-lg text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm"
+              onClick={() => setShowBooking(true)}
+            >
+              📝 Book Table
             </button>
             <button
               className="px-3 py-2 rounded-lg text-sm font-medium bg-gray-100 hover:bg-gray-200 text-gray-700"
@@ -456,5 +465,20 @@ export default function ReservationMap() {
         Changes sync live across all devices &bull; Auto-refreshes every 5 seconds
       </p>
     </div>
+
+    {showBooking && selectedLayout && selectedData && (
+      <BookingModal
+        tableId={selectedLayout.id}
+        tableLabel={selectedLayout.label}
+        tablePrice={selectedData.price}
+        event={event}
+        onClose={() => setShowBooking(false)}
+        onSuccess={() => {
+          setShowBooking(false);
+          if (selectedData.status === "available") toggleStatus(selectedLayout.id);
+        }}
+      />
+    )}
+    </>
   );
 }
