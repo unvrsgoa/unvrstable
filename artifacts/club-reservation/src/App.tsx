@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,21 +11,72 @@ const queryClient = new QueryClient();
 type Page = "map" | "dashboard" | "scan";
 type EventKey = "chetas" | "normal";
 
+const SESSION_DURATION = 5 * 60 * 1000; // 5 minutes in ms
+
+function isSessionValid() {
+  const expiry = sessionStorage.getItem("tlc_auth_expiry");
+  if (!expiry) return false;
+  return Date.now() < parseInt(expiry, 10);
+}
+
 function App() {
-  const [authed, setAuthed] = useState(() => sessionStorage.getItem("tlc_auth") === "1");
+  const [authed, setAuthed] = useState(() => isSessionValid());
   const [page, setPage] = useState<Page>("map");
   const [event, setEvent] = useState<EventKey>("chetas");
+  const [remaining, setRemaining] = useState(0);
 
-  const handleLogout = () => {
-    sessionStorage.removeItem("tlc_auth");
+  const logout = useCallback(() => {
+    sessionStorage.removeItem("tlc_auth_expiry");
     setAuthed(false);
+  }, []);
+
+  const resetExpiry = useCallback(() => {
+    if (sessionStorage.getItem("tlc_auth_expiry")) {
+      sessionStorage.setItem("tlc_auth_expiry", String(Date.now() + SESSION_DURATION));
+    }
+  }, []);
+
+  const handleLogin = () => {
+    sessionStorage.setItem("tlc_auth_expiry", String(Date.now() + SESSION_DURATION));
+    setAuthed(true);
+  };
+
+  // Session expiry checker — runs every 10 s
+  useEffect(() => {
+    if (!authed) return;
+    const interval = setInterval(() => {
+      if (!isSessionValid()) {
+        logout();
+      } else {
+        const expiry = parseInt(sessionStorage.getItem("tlc_auth_expiry") || "0", 10);
+        setRemaining(Math.max(0, Math.round((expiry - Date.now()) / 1000)));
+      }
+    }, 10_000);
+    // Set initial remaining immediately
+    const expiry = parseInt(sessionStorage.getItem("tlc_auth_expiry") || "0", 10);
+    setRemaining(Math.max(0, Math.round((expiry - Date.now()) / 1000)));
+    return () => clearInterval(interval);
+  }, [authed, logout]);
+
+  // Reset session on any user activity
+  useEffect(() => {
+    if (!authed) return;
+    const events = ["click", "keydown", "mousemove", "touchstart", "scroll"];
+    events.forEach((ev) => window.addEventListener(ev, resetExpiry, { passive: true }));
+    return () => events.forEach((ev) => window.removeEventListener(ev, resetExpiry));
+  }, [authed, resetExpiry]);
+
+  const fmtRemaining = () => {
+    const m = Math.floor(remaining / 60);
+    const s = remaining % 60;
+    return `${m}:${String(s).padStart(2, "0")}`;
   };
 
   if (!authed) {
     return (
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <LoginPage onLogin={() => setAuthed(true)} />
+          <LoginPage onLogin={handleLogin} />
           <Toaster />
         </TooltipProvider>
       </QueryClientProvider>
@@ -85,8 +136,15 @@ function App() {
                   </div>
                 )}
 
+                {/* Session timer */}
+                {remaining > 0 && remaining <= 120 && (
+                  <span className="text-xs font-mono text-orange-500 border border-orange-200 bg-orange-50 px-2 py-1 rounded-md">
+                    ⏱ {fmtRemaining()}
+                  </span>
+                )}
+
                 <button
-                  onClick={handleLogout}
+                  onClick={logout}
                   className="ml-1 px-3 py-1.5 rounded-lg text-xs font-bold text-red-500 border border-red-200 hover:bg-red-50 transition"
                   title="Logout"
                 >

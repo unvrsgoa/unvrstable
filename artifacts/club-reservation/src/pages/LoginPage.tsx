@@ -1,4 +1,5 @@
 import { useState } from "react";
+import leelaLogo from "@assets/image_1775534877798.png";
 
 const VALID_ID = "TLC@BRYN";
 const VALID_PW = "TLC@BRYN2026";
@@ -22,7 +23,6 @@ export default function LoginPage({ onLogin }: Props) {
 
     setTimeout(() => {
       if (userId === VALID_ID && password === VALID_PW) {
-        sessionStorage.setItem("tlc_auth", "1");
         onLogin();
       } else {
         setError("Invalid credentials. Access denied.");
@@ -37,18 +37,22 @@ export default function LoginPage({ onLogin }: Props) {
     <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-4">
       {/* Background glow effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-indigo-900/20 blur-[120px]" />
-        <div className="absolute bottom-1/4 left-1/4 w-[300px] h-[300px] rounded-full bg-purple-900/20 blur-[80px]" />
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-yellow-900/10 blur-[120px]" />
+        <div className="absolute bottom-1/4 left-1/4 w-[300px] h-[300px] rounded-full bg-yellow-800/10 blur-[80px]" />
       </div>
 
       <div className={`relative w-full max-w-sm ${shake ? "animate-shake" : ""}`}>
         {/* Logo / branding */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-900/60 border border-indigo-500/40 mb-4 shadow-lg shadow-indigo-900/40">
-            <span className="text-3xl">🎧</span>
-          </div>
-          <h1 className="text-2xl font-extrabold text-white tracking-widest uppercase">DJ Chetas Night</h1>
-          <p className="text-indigo-400 text-xs tracking-widest uppercase mt-1 font-semibold">Reservation Management</p>
+          <img
+            src={leelaLogo}
+            alt="The Leela Club"
+            className="mx-auto mb-3 h-28 w-auto object-contain drop-shadow-[0_0_20px_rgba(212,175,55,0.4)]"
+          />
+          <h1 className="text-2xl font-extrabold text-white tracking-widest uppercase" style={{ fontFamily: "serif" }}>
+            The Leela Club
+          </h1>
+          <p className="text-[#c9a84c] text-xs tracking-widest uppercase mt-1 font-semibold">Reservation Management</p>
         </div>
 
         {/* Card */}
@@ -67,7 +71,7 @@ export default function LoginPage({ onLogin }: Props) {
                   autoComplete="username"
                   value={userId}
                   onChange={(e) => { setUserId(e.target.value); setError(""); }}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-4 py-3 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-4 py-3 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition"
                   placeholder="Enter User ID"
                   required
                 />
@@ -84,7 +88,7 @@ export default function LoginPage({ onLogin }: Props) {
                   autoComplete="current-password"
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setError(""); }}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-11 py-3 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-11 py-3 text-white text-sm placeholder-gray-600 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition"
                   placeholder="Enter Password"
                   required
                 />
@@ -111,7 +115,8 @@ export default function LoginPage({ onLogin }: Props) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-60 text-white font-extrabold text-sm tracking-wider uppercase transition-all shadow-lg shadow-indigo-900/40 mt-2"
+              className="w-full py-3 rounded-xl font-extrabold text-sm tracking-wider uppercase transition-all shadow-lg mt-2 text-black"
+              style={{ background: "linear-gradient(135deg, #c9a84c, #f0d080, #c9a84c)", boxShadow: "0 4px 24px rgba(201,168,76,0.35)" }}
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -127,7 +132,7 @@ export default function LoginPage({ onLogin }: Props) {
         </div>
 
         <p className="text-center text-gray-700 text-xs mt-6">
-          🔐 Secure access — TLC Entertainment © 2026
+          🔐 Secure access — The Leela Club © 2026
         </p>
       </div>
 

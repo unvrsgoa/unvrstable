@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
+import leelaLogo from "@assets/image_1775534877798.png";
 
 export interface Booking {
   id: number;
@@ -169,8 +170,16 @@ export default function BookingModal({
             </div>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-2xl">×</button>
           </div>
+          {/* Leela Club branding on QR */}
+          <div className="flex flex-col items-center py-4 bg-[#0a0a0f]">
+            <img src={leelaLogo} alt="The Leela Club" className="h-16 w-auto object-contain mb-1" />
+            <p className="text-[#c9a84c] text-xs tracking-widest uppercase font-bold" style={{ fontFamily: "serif" }}>The Leela Club</p>
+          </div>
+
           <div className="p-4 flex flex-col items-center gap-3">
-            <QRCodeSVG value={savedBooking.bookingId} size={170} />
+            <div className="p-3 bg-white rounded-xl border-2 border-[#c9a84c]/40 shadow-md">
+              <QRCodeSVG value={savedBooking.bookingId} size={160} />
+            </div>
             <p className="text-xs font-mono text-gray-400">{savedBooking.bookingId}</p>
             <div className="w-full grid grid-cols-2 gap-2 text-sm">
               {[
