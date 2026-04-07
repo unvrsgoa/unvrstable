@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
-import { QRCodeSVG } from "qrcode.react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { QRCodeSVG, QRCodeCanvas } from "qrcode.react";
 import * as XLSX from "xlsx";
+import html2canvas from "html2canvas";
 import BookingModal, { type Booking } from "./BookingModal";
 import leelaLogo from "@assets/image_1775535190878.png";
 
@@ -41,6 +42,8 @@ export default function Dashboard({ event }: Props) {
   const [showGeneralEntry, setShowGeneralEntry] = useState(false);
   const [loading, setLoading] = useState(true);
   const [wiping, setWiping] = useState(false);
+  const [sharing, setSharing] = useState(false);
+  const shareCardRef = useRef<HTMLDivElement>(null);
 
   const load = useCallback(async () => {
     try {
@@ -98,6 +101,48 @@ export default function Dashboard({ event }: Props) {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Bookings");
     XLSX.writeFile(wb, `Bookings_${event}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+  };
+
+  const handleShare = async () => {
+    if (!selectedBooking || !shareCardRef.current) return;
+    setSharing(true);
+    try {
+      const canvas = await html2canvas(shareCardRef.current, {
+        backgroundColor: "#0a0a0f",
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+      const blob = await new Promise<Blob>((resolve, reject) =>
+        canvas.toBlob((b) => b ? resolve(b) : reject(new Error("Canvas empty")), "image/png")
+      );
+      const file = new File([blob], `leela-reservation-${selectedBooking.bookingId}.png`, { type: "image/png" });
+      const text =
+        `*Reservation Confirmed* 🎉\n\nThank you for choosing The Leela Club. Your reservation has been successfully confirmed.\n\n` +
+        `📋 *${selectedBooking.bookingId}*\n` +
+        `👤 ${selectedBooking.guestName}\n` +
+        `🪑 Table: ${selectedBooking.tableId.toUpperCase()}\n` +
+        `👥 Pax: ${selectedBooking.paxCount}\n` +
+        `📅 Date: ${selectedBooking.bookingDate}\n\n` +
+        `We look forward to welcoming you. For any assistance, please contact us.`;
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: "The Leela Club – Reservation", text });
+      } else {
+        // Desktop fallback: download image + open WhatsApp
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = file.name;
+        a.click();
+        URL.revokeObjectURL(url);
+        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
+      }
+    } catch (err) {
+      console.error("Share failed", err);
+    } finally {
+      setSharing(false);
+    }
   };
 
   const filtered = bookings.filter((b) =>
@@ -347,7 +392,21 @@ export default function Dashboard({ event }: Props) {
                   </div>
                 )}
               </div>
-              <button onClick={() => window.print()} className="w-full py-2 border rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50">🖨️ Print QR</button>
+              <div className="flex gap-2">
+                <button onClick={() => window.print()} className="flex-1 py-2 border rounded-lg text-xs font-semibold text-gray-600 hover:bg-gray-50">🖨️ Print</button>
+                <button
+                  onClick={handleShare}
+                  disabled={sharing}
+                  className="flex-1 py-2 rounded-lg text-xs font-bold text-white disabled:opacity-60 transition flex items-center justify-center gap-1.5"
+                  style={{ background: "linear-gradient(135deg, #25d366, #128c7e)" }}
+                >
+                  {sharing ? (
+                    <><svg className="animate-spin h-3 w-3" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg> Generating…</>
+                  ) : (
+                    <>📤 Share Details</>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -377,6 +436,79 @@ export default function Dashboard({ event }: Props) {
           onClose={() => setShowGeneralEntry(false)}
           onSuccess={() => { setShowGeneralEntry(false); load(); }}
         />
+      )}
+
+      {/* Hidden share card — captured by html2canvas */}
+      {selectedBooking && (
+        <div
+          ref={shareCardRef}
+          style={{
+            position: "fixed",
+            left: "-9999px",
+            top: 0,
+            width: "420px",
+            backgroundColor: "#0a0a0f",
+            fontFamily: "sans-serif",
+            overflow: "hidden",
+            borderRadius: "16px",
+          }}
+        >
+          {/* Gold top bar */}
+          <div style={{ height: "6px", background: "linear-gradient(90deg, #b8860b, #f0d080, #b8860b)" }} />
+
+          {/* Header: logo + name */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "20px 24px 12px", background: "#0a0a0f" }}>
+            <img src={leelaLogo} alt="The Leela Club" style={{ height: "80px", objectFit: "contain", marginBottom: "8px" }} />
+            <p style={{ color: "#c9a84c", fontWeight: 800, fontSize: "14px", letterSpacing: "4px", textTransform: "uppercase", margin: 0 }}>The Leela Club</p>
+          </div>
+
+          {/* Greeting */}
+          <div style={{ margin: "0 20px 16px", padding: "14px 16px", backgroundColor: "#141420", borderRadius: "10px", borderLeft: "3px solid #c9a84c" }}>
+            <p style={{ color: "#f0d080", fontWeight: 700, fontSize: "15px", margin: "0 0 6px" }}>Reservation Confirmed 🎉</p>
+            <p style={{ color: "#94a3b8", fontSize: "11.5px", lineHeight: 1.6, margin: 0 }}>
+              Thank you for choosing The Leela Club. Your reservation has been successfully confirmed.
+              We look forward to welcoming you. For any assistance, please contact us.
+            </p>
+          </div>
+
+          {/* QR + key details side by side */}
+          <div style={{ margin: "0 20px 16px", display: "flex", gap: "16px", alignItems: "center" }}>
+            <div style={{ padding: "10px", backgroundColor: "#fff", borderRadius: "10px", border: "2px solid #c9a84c", flexShrink: 0 }}>
+              <QRCodeCanvas value={selectedBooking.bookingId} size={120} />
+            </div>
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "8px" }}>
+              {[
+                ["Booking ID", selectedBooking.bookingId],
+                ["Guest", selectedBooking.guestName],
+                ["Table", selectedBooking.tableId.toUpperCase()],
+                ["Pax", String(selectedBooking.paxCount)],
+                ["Date", selectedBooking.bookingDate],
+              ].map(([k, v]) => (
+                <div key={k} style={{ backgroundColor: "#1a1a2e", borderRadius: "6px", padding: "6px 10px" }}>
+                  <span style={{ color: "#64748b", fontSize: "9px", display: "block", textTransform: "uppercase", letterSpacing: "1px" }}>{k}</span>
+                  <span style={{ color: "#e2e8f0", fontWeight: 600, fontSize: "12px" }}>{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Extra details row */}
+          <div style={{ margin: "0 20px 16px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
+            {[
+              ["Contact", selectedBooking.contactNo],
+              ["Payment", selectedBooking.paymentMode],
+              ["Status", selectedBooking.arrived ? "✅ Arrived" : "⏳ Pending"],
+            ].map(([k, v]) => (
+              <div key={k} style={{ backgroundColor: "#1a1a2e", borderRadius: "6px", padding: "6px 10px" }}>
+                <span style={{ color: "#64748b", fontSize: "9px", display: "block", textTransform: "uppercase", letterSpacing: "1px" }}>{k}</span>
+                <span style={{ color: "#e2e8f0", fontWeight: 600, fontSize: "11px" }}>{v}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Gold bottom bar */}
+          <div style={{ height: "6px", background: "linear-gradient(90deg, #b8860b, #f0d080, #b8860b)" }} />
+        </div>
       )}
     </div>
   );
