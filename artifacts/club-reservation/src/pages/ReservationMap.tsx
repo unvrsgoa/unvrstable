@@ -271,11 +271,8 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
       </div>
 
       <div className="text-center mb-5">
-        <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 uppercase">
-          {EVENT_CONFIG[event].label}
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">
-          Table Reservation Management &mdash; Click any table to select, then toggle status or edit price
+        <p className="text-sm text-gray-500">
+          Floor Tables: Up to 6 persons &bull; Gold &amp; VIP Tables: Up to 8 persons &bull; Platinum Tables: Up to 12 persons
         </p>
       </div>
 
