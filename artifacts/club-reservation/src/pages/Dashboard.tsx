@@ -18,7 +18,13 @@ interface Stats {
   byHandBand: Record<string, number>;
 }
 
-interface Props { event: string; }
+interface Props {
+  event: string;
+  role?: string;
+  currentShow?: string;
+  onShowChange?: (s: string) => void;
+  normalEventName?: string;
+}
 
 const HAND_BAND_BG: Record<string, string> = {
   Red: "#ef4444", Green: "#22c55e", Black: "#1f2937",
@@ -33,31 +39,50 @@ function safeBreakdown(s?: string | null): { mode: string; amount: number }[] {
 
 function fmt(n: number) { return `₹${n.toLocaleString()}`; }
 
-export default function Dashboard({ event }: Props) {
+export default function Dashboard({
+  event,
+  role = "admin",
+  currentShow = "Show 1",
+  onShowChange,
+  normalEventName = "Normal Night",
+}: Props) {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [search, setSearch] = useState("");
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [editingBooking, setEditingBooking] = useState<Booking | null>(null);
   const [showGeneralEntry, setShowGeneralEntry] = useState(false);
+  const [showCoverCharge, setShowCoverCharge] = useState(false);
   const [loading, setLoading] = useState(true);
   const [wiping, setWiping] = useState(false);
   const [sharing, setSharing] = useState(false);
   const shareCardRef = useRef<HTMLDivElement>(null);
 
+  // Feature 2: show management
+  const [shows, setShows] = useState<string[]>([]);
+  const [showPanel, setShowPanel] = useState(false);
+
+  const loadShows = useCallback(async () => {
+    try {
+      const data = await fetch(`${BASE}/api/bookings/shows?event=${event}`).then((r) => r.json());
+      setShows(Array.isArray(data) ? data : ["Show 1"]);
+    } catch { setShows(["Show 1"]); }
+  }, [event]);
+
   const load = useCallback(async () => {
     try {
+      const show = encodeURIComponent(currentShow);
       const [b, s] = await Promise.all([
-        fetch(`${BASE}/api/bookings?event=${event}`).then((r) => r.json()),
-        fetch(`${BASE}/api/bookings/stats?event=${event}`).then((r) => r.json()),
+        fetch(`${BASE}/api/bookings?event=${event}&show=${show}`).then((r) => r.json()),
+        fetch(`${BASE}/api/bookings/stats?event=${event}&show=${show}`).then((r) => r.json()),
       ]);
       setBookings(Array.isArray(b) ? b : []);
       setStats(s);
     } catch (e) { console.error(e); }
     finally { setLoading(false); }
-  }, [event]);
+  }, [event, currentShow]);
 
-  useEffect(() => { setLoading(true); load(); }, [load]);
+  useEffect(() => { setLoading(true); load(); loadShows(); }, [load, loadShows]);
 
   const deleteBooking = async (id: number) => {
     if (!confirm("Delete this booking permanently?")) return;
@@ -67,14 +92,27 @@ export default function Dashboard({ event }: Props) {
   };
 
   const wipeAll = async () => {
-    const eventLabel = event === "chetas" ? "DJ Chetas Night" : "Normal Night";
-    if (!confirm(`⚠️ DANGER: This will permanently delete ALL ${bookings.length} booking(s) for "${eventLabel}".\n\nThis cannot be undone! Continue?`)) return;
-    if (!confirm(`Final confirmation: Delete ALL data for ${eventLabel}?`)) return;
+    const eventLabel = event === "chetas" ? "DJ Chetas Night" : normalEventName;
+    if (!confirm(`⚠️ DANGER: This will permanently delete ALL ${bookings.length} booking(s) for "${eventLabel}" — ${currentShow}.\n\nThis cannot be undone! Continue?`)) return;
+    if (!confirm(`Final confirmation: Delete ALL data for ${eventLabel} / ${currentShow}?`)) return;
     setWiping(true);
     try {
-      await fetch(`${BASE}/api/bookings/wipe?event=${event}`, { method: "DELETE" });
+      await fetch(`${BASE}/api/bookings/wipe?event=${event}&show=${encodeURIComponent(currentShow)}`, { method: "DELETE" });
       load();
     } finally { setWiping(false); }
+  };
+
+  const switchShow = (s: string) => {
+    onShowChange?.(s);
+    setShowPanel(false);
+  };
+
+  const addNewShow = () => {
+    const name = prompt("Enter new show name (e.g. Show 2):");
+    if (!name?.trim()) return;
+    const trimmed = name.trim();
+    if (!shows.includes(trimmed)) setShows((prev) => [...prev, trimmed]);
+    switchShow(trimmed);
   };
 
   const exportToExcel = () => {
@@ -159,23 +197,71 @@ export default function Dashboard({ event }: Props) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-        <h2 className="text-2xl font-extrabold text-gray-800">
-          📊 Dashboard — {event === "chetas" ? "DJ Chetas Night" : "Normal Night"}
-        </h2>
+      {/* Header row */}
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <div>
+          <h2 className="text-2xl font-extrabold text-gray-800">
+            📊 Dashboard — {event === "chetas" ? "DJ Chetas Night" : normalEventName}
+          </h2>
+          {/* Feature 2: show selector */}
+          <div className="relative mt-1">
+            <button
+              onClick={() => setShowPanel((v) => !v)}
+              className="flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-800"
+            >
+              🎭 {currentShow}
+              <span className="text-xs">▾</span>
+            </button>
+            {showPanel && (
+              <div className="absolute left-0 top-7 z-50 bg-white border rounded-xl shadow-xl p-2 min-w-[180px]">
+                <p className="text-xs font-bold text-gray-400 uppercase px-2 mb-1">Select Show</p>
+                {shows.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => switchShow(s)}
+                    className={`w-full text-left px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-indigo-50 ${s === currentShow ? "bg-indigo-100 text-indigo-700" : "text-gray-700"}`}
+                  >
+                    {s === currentShow ? "✓ " : ""}{s}
+                  </button>
+                ))}
+                <hr className="my-1" />
+                <button
+                  onClick={addNewShow}
+                  className="w-full text-left px-3 py-1.5 rounded-lg text-sm font-medium text-emerald-600 hover:bg-emerald-50"
+                >
+                  ＋ New Show
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
         <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setShowGeneralEntry(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 shadow-sm"
-          >
-            🚪 General Entry
-          </button>
+          {/* Feature 3: Entry + Cover Charge (admin/operator only) */}
+          {role !== "viewer" && (
+            <>
+              <button
+                onClick={() => setShowGeneralEntry(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 shadow-sm"
+              >
+                🚪 Entry
+              </button>
+              <button
+                onClick={() => setShowCoverCharge(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-violet-600 text-white rounded-lg text-sm font-bold hover:bg-violet-700 shadow-sm"
+              >
+                💳 Cover Charge
+              </button>
+            </>
+          )}
           <button onClick={exportToExcel} className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-700 shadow-sm">
             📥 Export Excel
           </button>
-          <button onClick={wipeAll} disabled={wiping || bookings.length === 0} className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-bold hover:bg-red-700 shadow-sm disabled:opacity-40">
-            🗑️ {wiping ? "Wiping…" : "Wipe All Data"}
-          </button>
+          {/* Feature 4: Wipe only for admin */}
+          {role === "admin" && (
+            <button onClick={wipeAll} disabled={wiping || bookings.length === 0} className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-bold hover:bg-red-700 shadow-sm disabled:opacity-40">
+              🗑️ {wiping ? "Wiping…" : "Wipe All Data"}
+            </button>
+          )}
         </div>
       </div>
 
@@ -299,8 +385,12 @@ export default function Dashboard({ event }: Props) {
                       </td>
                       <td className="px-3 py-2" onClick={(e) => e.stopPropagation()}>
                         <div className="flex gap-2">
-                          <button onClick={() => setEditingBooking(b)} className="text-indigo-500 hover:text-indigo-700 text-xs font-bold">Edit</button>
-                          <button onClick={() => deleteBooking(b.id)} className="text-red-400 hover:text-red-600 text-xs font-medium">Del</button>
+                          {role !== "viewer" && (
+                            <button onClick={() => setEditingBooking(b)} className="text-indigo-500 hover:text-indigo-700 text-xs font-bold">Edit</button>
+                          )}
+                          {role === "admin" && (
+                            <button onClick={() => deleteBooking(b.id)} className="text-red-400 hover:text-red-600 text-xs font-medium">Del</button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -324,10 +414,12 @@ export default function Dashboard({ event }: Props) {
                 <p className="text-xs font-mono text-[#c9a84c] mt-0.5">{selectedBooking.bookingId}</p>
               </div>
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => { setEditingBooking(selectedBooking); setSelectedBooking(null); }}
-                  className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-bold border border-white/20 transition"
-                >✏️ Edit</button>
+                {role !== "viewer" && (
+                  <button
+                    onClick={() => { setEditingBooking(selectedBooking); setSelectedBooking(null); }}
+                    className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-bold border border-white/20 transition"
+                  >✏️ Edit</button>
+                )}
                 <button onClick={() => setSelectedBooking(null)} className="text-gray-400 hover:text-white text-2xl leading-none transition">×</button>
               </div>
             </div>
@@ -421,20 +513,35 @@ export default function Dashboard({ event }: Props) {
           tableLabel={editingBooking.tableId.toUpperCase()}
           tablePrice=""
           event={editingBooking.event}
+          showLabel={currentShow}
           onClose={() => setEditingBooking(null)}
           onSuccess={() => { setEditingBooking(null); load(); }}
         />
       )}
 
-      {/* General Entry booking modal */}
+      {/* Entry booking modal */}
       {showGeneralEntry && (
         <BookingModal
           tableId="general_entry"
-          tableLabel="GENERAL ENTRY"
+          tableLabel="ENTRY"
           tablePrice=""
           event={event}
+          showLabel={currentShow}
           onClose={() => setShowGeneralEntry(false)}
           onSuccess={() => { setShowGeneralEntry(false); load(); }}
+        />
+      )}
+
+      {/* Cover Charge booking modal */}
+      {showCoverCharge && (
+        <BookingModal
+          tableId="cover_charge"
+          tableLabel="COVER CHARGE"
+          tablePrice=""
+          event={event}
+          showLabel={currentShow}
+          onClose={() => setShowCoverCharge(false)}
+          onSuccess={() => { setShowCoverCharge(false); load(); }}
         />
       )}
 

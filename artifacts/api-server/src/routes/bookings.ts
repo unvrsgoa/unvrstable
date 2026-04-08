@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { db, bookingsTable } from "@workspace/db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, or, isNull } from "drizzle-orm";
 
 const router: IRouter = Router();
 
@@ -9,6 +9,13 @@ function generateBookingId(): string {
   const dateStr = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
   const rand = Math.random().toString(36).toUpperCase().slice(2, 6);
   return `BK-${dateStr}-${rand}`;
+}
+
+function buildShowFilter(show: string | undefined) {
+  if (!show) return undefined;
+  // "Show 1" is the default — treat NULL rows as belonging to it (backward compat)
+  if (show === "Show 1") return or(eq(bookingsTable.showLabel, show), isNull(bookingsTable.showLabel));
+  return eq(bookingsTable.showLabel, show);
 }
 
 function computeStats(rows: typeof bookingsTable.$inferSelect[]) {
@@ -42,11 +49,14 @@ function safeParseBreakdown(s: string | null | undefined): { mode: string; amoun
   try { return JSON.parse(s); } catch { return []; }
 }
 
-// GET /bookings?event=chetas
+// GET /bookings?event=chetas&show=Show+1
 router.get("/bookings", async (req, res) => {
   const event = (req.query.event as string) || "chetas";
+  const show = req.query.show as string | undefined;
   try {
-    const rows = await db.select().from(bookingsTable).where(eq(bookingsTable.event, event));
+    const showFilter = buildShowFilter(show);
+    const where = showFilter ? and(eq(bookingsTable.event, event), showFilter) : eq(bookingsTable.event, event);
+    const rows = await db.select().from(bookingsTable).where(where);
     rows.sort((a, b) => (b.createdAt?.getTime() ?? 0) - (a.createdAt?.getTime() ?? 0));
     res.json(rows);
   } catch (err) {
@@ -55,11 +65,14 @@ router.get("/bookings", async (req, res) => {
   }
 });
 
-// GET /bookings/stats?event=chetas
+// GET /bookings/stats?event=chetas&show=Show+1
 router.get("/bookings/stats", async (req, res) => {
   const event = (req.query.event as string) || "chetas";
+  const show = req.query.show as string | undefined;
   try {
-    const rows = await db.select().from(bookingsTable).where(eq(bookingsTable.event, event));
+    const showFilter = buildShowFilter(show);
+    const where = showFilter ? and(eq(bookingsTable.event, event), showFilter) : eq(bookingsTable.event, event);
+    const rows = await db.select().from(bookingsTable).where(where);
     res.json(computeStats(rows));
   } catch (err) {
     console.error(err);
@@ -79,12 +92,33 @@ router.get("/bookings/scan/:bookingId", async (req, res) => {
   }
 });
 
-// GET /bookings/by-table/:tableId?event=chetas
-router.get("/bookings/by-table/:tableId", async (req, res) => {
+// GET /bookings/shows?event=chetas  — list distinct show labels for an event
+router.get("/bookings/shows", async (req, res) => {
   const event = (req.query.event as string) || "chetas";
   try {
-    const rows = await db.select().from(bookingsTable)
-      .where(and(eq(bookingsTable.tableId, req.params.tableId), eq(bookingsTable.event, event)));
+    const rows = await db.selectDistinct({ showLabel: bookingsTable.showLabel })
+      .from(bookingsTable)
+      .where(eq(bookingsTable.event, event));
+    const labels = Array.from(new Set(rows.map((r) => r.showLabel || "Show 1"))).sort();
+    // Always include Show 1
+    if (!labels.includes("Show 1")) labels.unshift("Show 1");
+    res.json(labels);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch shows" });
+  }
+});
+
+// GET /bookings/by-table/:tableId?event=chetas&show=Show+1
+router.get("/bookings/by-table/:tableId", async (req, res) => {
+  const event = (req.query.event as string) || "chetas";
+  const show = req.query.show as string | undefined;
+  try {
+    const showFilter = buildShowFilter(show);
+    const where = showFilter
+      ? and(eq(bookingsTable.tableId, req.params.tableId), eq(bookingsTable.event, event), showFilter)
+      : and(eq(bookingsTable.tableId, req.params.tableId), eq(bookingsTable.event, event));
+    const rows = await db.select().from(bookingsTable).where(where);
     rows.sort((a, b) => (b.createdAt?.getTime() ?? 0) - (a.createdAt?.getTime() ?? 0));
     res.json(rows[0] ?? null);
   } catch (err) {
@@ -93,11 +127,14 @@ router.get("/bookings/by-table/:tableId", async (req, res) => {
   }
 });
 
-// DELETE /bookings/wipe?event=chetas  (must be BEFORE /:id)
+// DELETE /bookings/wipe?event=chetas&show=Show+1
 router.delete("/bookings/wipe", async (req, res) => {
   const event = (req.query.event as string) || "chetas";
+  const show = req.query.show as string | undefined;
   try {
-    await db.delete(bookingsTable).where(eq(bookingsTable.event, event));
+    const showFilter = buildShowFilter(show);
+    const where = showFilter ? and(eq(bookingsTable.event, event), showFilter) : eq(bookingsTable.event, event);
+    await db.delete(bookingsTable).where(where);
     res.json({ success: true });
   } catch (err) {
     console.error(err);
@@ -108,7 +145,7 @@ router.delete("/bookings/wipe", async (req, res) => {
 // POST /bookings
 router.post("/bookings", async (req, res) => {
   const { tableId, event, guestName, bookingDate, totalPrice, advanceAmount, paxCount, contactNo,
-    paymentMode, paymentBreakdown, ageGroup, tlcCardNo, handBandColor } = req.body;
+    paymentMode, paymentBreakdown, ageGroup, tlcCardNo, handBandColor, showLabel } = req.body;
   const balance = (totalPrice ?? 0) - (advanceAmount ?? 0);
   try {
     const [created] = await db.insert(bookingsTable).values({
@@ -118,6 +155,7 @@ router.post("/bookings", async (req, res) => {
       paxCount: paxCount ?? 1, contactNo, paymentMode: paymentMode || "Cash",
       paymentBreakdown: paymentBreakdown ? JSON.stringify(paymentBreakdown) : "[]",
       ageGroup, tlcCardNo: tlcCardNo || "", handBandColor: handBandColor || "",
+      showLabel: showLabel || "Show 1",
     }).returning();
     res.json(created);
   } catch (err) {
@@ -126,7 +164,7 @@ router.post("/bookings", async (req, res) => {
   }
 });
 
-// PATCH /bookings/:id  (update booking details)
+// PATCH /bookings/:id/arrived
 router.patch("/bookings/:id/arrived", async (req, res) => {
   const id = parseInt(req.params.id);
   try {

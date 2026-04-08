@@ -17,6 +17,7 @@ export const bookingsTable = pgTable("bookings", {
   ageGroup: text("age_group").notNull(),
   tlcCardNo: text("tlc_card_no").default(""),
   handBandColor: text("hand_band_color").default(""),
+  showLabel: text("show_label").default("Show 1"),
   arrived: boolean("arrived").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });

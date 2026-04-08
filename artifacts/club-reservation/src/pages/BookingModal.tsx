@@ -29,6 +29,7 @@ interface Props {
   tableLabel: string;
   tablePrice: string;
   event: string;
+  showLabel?: string;
   mode?: "create" | "edit";
   existingBooking?: Booking;
   onClose: () => void;
@@ -77,7 +78,7 @@ function Input({ value, onChange, placeholder, type = "text" }: { value: string 
 }
 
 export default function BookingModal({
-  tableId, tableLabel, tablePrice, event,
+  tableId, tableLabel, tablePrice, event, showLabel,
   mode = "create", existingBooking,
   onClose, onSuccess
 }: Props) {
@@ -135,6 +136,7 @@ export default function BookingModal({
       advanceAmount: totalAdvance, paxCount, contactNo,
       paymentMode: primaryMode, paymentBreakdown: payments,
       ageGroup, tlcCardNo, handBandColor,
+      showLabel: showLabel || "Show 1",
     };
     try {
       const url = isEdit

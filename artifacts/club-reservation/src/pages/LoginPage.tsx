@@ -1,11 +1,20 @@
 import { useState } from "react";
 import leelaLogo from "@assets/image_1775534877798.png";
 
-const VALID_ID = "TLC@BRYN";
-const VALID_PW = "TLC@BRYN2026";
+const USERS: { id: string; pw: string; role: "admin" | "operator" | "viewer" }[] = [
+  { id: "admin",    pw: "Tlc@goa8094",  role: "admin" },
+  { id: "gate@tlc", pw: "Grm@tlc2026", role: "operator" },
+  { id: "leela",   pw: "leela",         role: "viewer" },
+];
+
+const ROLE_LABELS: Record<string, string> = {
+  admin: "Administrator",
+  operator: "Gate Operator",
+  viewer: "View Only",
+};
 
 interface Props {
-  onLogin: () => void;
+  onLogin: (role: "admin" | "operator" | "viewer") => void;
 }
 
 export default function LoginPage({ onLogin }: Props) {
@@ -22,8 +31,10 @@ export default function LoginPage({ onLogin }: Props) {
     setLoading(true);
 
     setTimeout(() => {
-      if (userId === VALID_ID && password === VALID_PW) {
-        onLogin();
+      const user = USERS.find((u) => u.id === userId && u.pw === password);
+      if (user) {
+        sessionStorage.setItem("tlc_role", user.role);
+        onLogin(user.role);
       } else {
         setError("Invalid credentials. Access denied.");
         setShake(true);
@@ -35,14 +46,12 @@ export default function LoginPage({ onLogin }: Props) {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center px-4">
-      {/* Background glow effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-yellow-900/10 blur-[120px]" />
         <div className="absolute bottom-1/4 left-1/4 w-[300px] h-[300px] rounded-full bg-yellow-800/10 blur-[80px]" />
       </div>
 
       <div className={`relative w-full max-w-sm ${shake ? "animate-shake" : ""}`}>
-        {/* Logo / branding */}
         <div className="text-center mb-8">
           <img
             src={leelaLogo}
@@ -55,13 +64,11 @@ export default function LoginPage({ onLogin }: Props) {
           <p className="text-[#c9a84c] text-xs tracking-widest uppercase mt-1 font-semibold">Reservation Management</p>
         </div>
 
-        {/* Card */}
         <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 shadow-2xl">
           <h2 className="text-white font-bold text-lg mb-1">Staff Login</h2>
           <p className="text-gray-500 text-xs mb-6">Authorised personnel only</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* User ID */}
             <div>
               <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">User ID</label>
               <div className="relative">
@@ -78,7 +85,6 @@ export default function LoginPage({ onLogin }: Props) {
               </div>
             </div>
 
-            {/* Password */}
             <div>
               <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">Password</label>
               <div className="relative">
@@ -103,7 +109,6 @@ export default function LoginPage({ onLogin }: Props) {
               </div>
             </div>
 
-            {/* Error */}
             {error && (
               <div className="flex items-center gap-2 bg-red-900/30 border border-red-500/30 rounded-lg px-3 py-2">
                 <span className="text-red-400 text-sm">⚠️</span>
@@ -111,11 +116,10 @@ export default function LoginPage({ onLogin }: Props) {
               </div>
             )}
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl font-extrabold text-sm tracking-wider uppercase transition-all shadow-lg mt-2 text-black"
+              className="w-full py-3 rounded-xl font-extrabold text-sm tracking-wider uppercase transition-all shadow-lg mt-2 text-black disabled:opacity-60"
               style={{ background: "linear-gradient(135deg, #c9a84c, #f0d080, #c9a84c)", boxShadow: "0 4px 24px rgba(201,168,76,0.35)" }}
             >
               {loading ? (
@@ -131,7 +135,18 @@ export default function LoginPage({ onLogin }: Props) {
           </form>
         </div>
 
-        <p className="text-center text-gray-700 text-xs mt-6">
+        {/* Role legend */}
+        <div className="mt-5 bg-white/3 border border-white/5 rounded-xl p-4 space-y-1.5">
+          {USERS.map((u) => (
+            <div key={u.id} className="flex items-center gap-2 text-xs">
+              <span className={`w-2 h-2 rounded-full flex-shrink-0 ${u.role === "admin" ? "bg-yellow-400" : u.role === "operator" ? "bg-blue-400" : "bg-gray-500"}`} />
+              <span className="text-gray-500">{ROLE_LABELS[u.role]}</span>
+              <span className="text-gray-700 ml-auto">{u.id}</span>
+            </div>
+          ))}
+        </div>
+
+        <p className="text-center text-gray-700 text-xs mt-4">
           🔐 Secure access — The Leela Club © 2026
         </p>
       </div>

@@ -139,9 +139,12 @@ const EVENT_CONFIG = {
 interface Props {
   event: EventKey;
   onEventChange: (ev: EventKey) => void;
+  role?: string;
+  currentShow?: string;
+  normalEventName?: string;
 }
 
-export default function ReservationMap({ event, onEventChange }: Props) {
+export default function ReservationMap({ event, onEventChange, role = "admin", currentShow = "Show 1", normalEventName = "Normal Night" }: Props) {
   const [tableData, setTableData] = useState<Record<string, ApiTable>>({});
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<EditState>({ tableId: null, value: "" });
@@ -215,7 +218,7 @@ export default function ReservationMap({ event, onEventChange }: Props) {
     if (!selected) return;
     setLoadingEdit(true);
     try {
-      const res = await fetch(`${BASE}/api/bookings/by-table/${selected}?event=${event}`);
+      const res = await fetch(`${BASE}/api/bookings/by-table/${selected}?event=${event}&show=${encodeURIComponent(currentShow)}`);
       const data = await res.json();
       setBookingToEdit(data || null);
     } catch { setBookingToEdit(null); }
@@ -263,7 +266,7 @@ export default function ReservationMap({ event, onEventChange }: Props) {
               : "bg-white text-gray-500 border border-gray-300 hover:bg-gray-50"
           }`}
         >
-          🎵 Normal Night
+          🎵 {normalEventName}
         </button>
       </div>
 
@@ -330,13 +333,15 @@ export default function ReservationMap({ event, onEventChange }: Props) {
             >
               {selectedData.status === "available" ? "Mark Sold Out" : "Mark Available"}
             </button>
-            <button
-              className="px-5 py-2 rounded-lg text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm"
-              onClick={() => setShowBooking(true)}
-            >
-              📝 Book Table
-            </button>
-            {selectedData.status === "sold_out" && (
+            {role !== "viewer" && (
+              <button
+                className="px-5 py-2 rounded-lg text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm"
+                onClick={() => setShowBooking(true)}
+              >
+                📝 Book Table
+              </button>
+            )}
+            {role !== "viewer" && selectedData.status === "sold_out" && (
               <button
                 className="px-5 py-2 rounded-lg text-sm font-bold text-white bg-amber-500 hover:bg-amber-600 shadow-sm disabled:opacity-50"
                 onClick={openEditBooking}
@@ -495,6 +500,7 @@ export default function ReservationMap({ event, onEventChange }: Props) {
         tableLabel={selectedLayout.label}
         tablePrice={selectedData.price}
         event={event}
+        showLabel={currentShow}
         onClose={() => setShowBooking(false)}
         onSuccess={() => {
           setShowBooking(false);
@@ -511,6 +517,7 @@ export default function ReservationMap({ event, onEventChange }: Props) {
         tableLabel={selectedLayout.label}
         tablePrice=""
         event={event}
+        showLabel={currentShow}
         onClose={() => setBookingToEdit(null)}
         onSuccess={() => setBookingToEdit(null)}
       />
