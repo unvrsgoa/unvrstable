@@ -32,6 +32,24 @@ const HAND_BAND_BG: Record<string, string> = {
   Yellow: "#eab308", Orange: "#f97316", Purple: "#a855f7", Golden: "#d97706",
 };
 
+const HAND_BAND_COLORS = ["Red", "Green", "Black", "Pink", "Blue", "Silver", "Yellow", "Orange", "Purple", "Golden"];
+const PAYMENT_MODES = ["Cash", "Card", "UPI", "Online", "Complimentary"];
+const AGE_GROUPS = ["18-25", "26-35", "36-45", "46+"];
+
+interface NewRow {
+  guestName: string;
+  tableId: string;
+  bookingDate: string;
+  paxCount: string;
+  contactNo: string;
+  tlcCardNo: string;
+  handBandColor: string;
+  totalPrice: string;
+  advanceAmount: string;
+  paymentMode: string;
+  ageGroup: string;
+}
+
 function safeBreakdown(s?: string | null): { mode: string; amount: number }[] {
   if (!s) return [];
   try { const r = JSON.parse(s); return Array.isArray(r) ? r : []; } catch { return []; }
@@ -57,6 +75,53 @@ export default function Dashboard({
   const [wiping, setWiping] = useState(false);
   const [sharing, setSharing] = useState(false);
   const shareCardRef = useRef<HTMLDivElement>(null);
+
+  // Inline row entry (Excel-like)
+  const [newRow, setNewRow] = useState<NewRow | null>(null);
+  const [savingRow, setSavingRow] = useState(false);
+
+  const blankRow = (): NewRow => ({
+    guestName: "", tableId: "", bookingDate: new Date().toISOString().slice(0, 10),
+    paxCount: "1", contactNo: "", tlcCardNo: "", handBandColor: "",
+    totalPrice: "0", advanceAmount: "0", paymentMode: "Cash", ageGroup: "18-25",
+  });
+
+  const saveNewRow = async () => {
+    if (!newRow) return;
+    if (!newRow.guestName.trim()) { alert("Guest name is required."); return; }
+    if (!newRow.tableId.trim()) { alert("Table ID is required."); return; }
+    setSavingRow(true);
+    try {
+      const body = {
+        tableId: newRow.tableId.trim().toLowerCase(),
+        event,
+        guestName: newRow.guestName.trim(),
+        bookingDate: newRow.bookingDate,
+        totalPrice: Number(newRow.totalPrice) || 0,
+        advanceAmount: Number(newRow.advanceAmount) || 0,
+        paxCount: Number(newRow.paxCount) || 1,
+        contactNo: newRow.contactNo.trim(),
+        paymentMode: newRow.paymentMode,
+        paymentBreakdown: JSON.stringify([{ mode: newRow.paymentMode, amount: Number(newRow.advanceAmount) || 0 }]),
+        ageGroup: newRow.ageGroup,
+        tlcCardNo: newRow.tlcCardNo.trim(),
+        handBandColor: newRow.handBandColor,
+        showLabel: currentShow,
+      };
+      const res = await fetch(`${BASE}/api/bookings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error("Failed");
+      setNewRow(null);
+      load();
+    } catch {
+      alert("Failed to save booking. Please try again.");
+    } finally {
+      setSavingRow(false);
+    }
+  };
 
   // Feature 2: show management
   const [shows, setShows] = useState<string[]>([]);
@@ -324,7 +389,7 @@ export default function Dashboard({
         </div>
       )}
 
-      {/* Search + refresh */}
+      {/* Search + refresh + add row */}
       <div className="flex gap-3 mb-4">
         <input
           className="flex-1 border rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-400 outline-none"
@@ -332,14 +397,22 @@ export default function Dashboard({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+        {role !== "viewer" && !newRow && (
+          <button
+            onClick={() => setNewRow(blankRow())}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-bold hover:bg-indigo-700 whitespace-nowrap shadow-sm"
+          >
+            ＋ Add Row
+          </button>
+        )}
         <button onClick={load} className="px-4 py-2 bg-gray-100 rounded-lg text-sm font-medium hover:bg-gray-200 whitespace-nowrap">🔄 Refresh</button>
       </div>
 
       {/* Bookings table */}
-      {filtered.length === 0 ? (
+      {!newRow && filtered.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
           <p className="text-4xl mb-2">📭</p>
-          <p className="font-medium">{bookings.length === 0 ? "No bookings yet. Book a table from the Floor Map." : "No results match your search."}</p>
+          <p className="font-medium">{bookings.length === 0 ? "No bookings yet. Book a table from the Floor Map or click Add Row." : "No results match your search."}</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl shadow border overflow-hidden">
@@ -347,12 +420,154 @@ export default function Dashboard({
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  {["ID", "Guest", "Table", "Date", "Pax", "TLC Card", "Hand Band", "Total", "Advance", "Balance", "Payment", "Status", "Actions"].map((h) => (
+                  {["ID", "Guest *", "Table *", "Date", "Pax", "Contact", "TLC Card", "Hand Band", "Total ₹", "Advance ₹", "Balance ₹", "Payment", "Age", "Status", "Actions"].map((h) => (
                     <th key={h} className="px-3 py-3 text-left text-xs font-bold text-gray-500 uppercase whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
+
+                {/* Inline new-row entry */}
+                {newRow && (
+                  <tr className="bg-indigo-50 border-l-4 border-indigo-500">
+                    {/* ID — auto */}
+                    <td className="px-3 py-2">
+                      <span className="font-mono text-xs text-gray-400 italic">AUTO</span>
+                    </td>
+                    {/* Guest Name */}
+                    <td className="px-1 py-1">
+                      <input
+                        autoFocus
+                        className="border rounded px-2 py-1 text-xs w-28 focus:ring-1 focus:ring-indigo-400 outline-none"
+                        placeholder="Guest name"
+                        value={newRow.guestName}
+                        onChange={(e) => setNewRow({ ...newRow, guestName: e.target.value })}
+                      />
+                    </td>
+                    {/* Table ID */}
+                    <td className="px-1 py-1">
+                      <input
+                        className="border rounded px-2 py-1 text-xs w-20 uppercase focus:ring-1 focus:ring-indigo-400 outline-none"
+                        placeholder="e.g. t1"
+                        value={newRow.tableId}
+                        onChange={(e) => setNewRow({ ...newRow, tableId: e.target.value })}
+                      />
+                    </td>
+                    {/* Date */}
+                    <td className="px-1 py-1">
+                      <input
+                        type="date"
+                        className="border rounded px-2 py-1 text-xs focus:ring-1 focus:ring-indigo-400 outline-none"
+                        value={newRow.bookingDate}
+                        onChange={(e) => setNewRow({ ...newRow, bookingDate: e.target.value })}
+                      />
+                    </td>
+                    {/* Pax */}
+                    <td className="px-1 py-1">
+                      <input
+                        type="number"
+                        min={1}
+                        className="border rounded px-2 py-1 text-xs w-14 focus:ring-1 focus:ring-indigo-400 outline-none"
+                        value={newRow.paxCount}
+                        onChange={(e) => setNewRow({ ...newRow, paxCount: e.target.value })}
+                      />
+                    </td>
+                    {/* Contact */}
+                    <td className="px-1 py-1">
+                      <input
+                        className="border rounded px-2 py-1 text-xs w-24 focus:ring-1 focus:ring-indigo-400 outline-none"
+                        placeholder="Phone"
+                        value={newRow.contactNo}
+                        onChange={(e) => setNewRow({ ...newRow, contactNo: e.target.value })}
+                      />
+                    </td>
+                    {/* TLC Card */}
+                    <td className="px-1 py-1">
+                      <input
+                        className="border rounded px-2 py-1 text-xs w-20 focus:ring-1 focus:ring-indigo-400 outline-none"
+                        placeholder="Card no."
+                        value={newRow.tlcCardNo}
+                        onChange={(e) => setNewRow({ ...newRow, tlcCardNo: e.target.value })}
+                      />
+                    </td>
+                    {/* Hand Band */}
+                    <td className="px-1 py-1">
+                      <select
+                        className="border rounded px-2 py-1 text-xs focus:ring-1 focus:ring-indigo-400 outline-none"
+                        value={newRow.handBandColor}
+                        onChange={(e) => setNewRow({ ...newRow, handBandColor: e.target.value })}
+                      >
+                        <option value="">—</option>
+                        {HAND_BAND_COLORS.map((c) => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </td>
+                    {/* Total */}
+                    <td className="px-1 py-1">
+                      <input
+                        type="number"
+                        min={0}
+                        className="border rounded px-2 py-1 text-xs w-20 focus:ring-1 focus:ring-indigo-400 outline-none"
+                        value={newRow.totalPrice}
+                        onChange={(e) => setNewRow({ ...newRow, totalPrice: e.target.value })}
+                      />
+                    </td>
+                    {/* Advance */}
+                    <td className="px-1 py-1">
+                      <input
+                        type="number"
+                        min={0}
+                        className="border rounded px-2 py-1 text-xs w-20 focus:ring-1 focus:ring-indigo-400 outline-none"
+                        value={newRow.advanceAmount}
+                        onChange={(e) => setNewRow({ ...newRow, advanceAmount: e.target.value })}
+                      />
+                    </td>
+                    {/* Balance — auto calc */}
+                    <td className="px-3 py-2 text-xs font-semibold text-red-600 whitespace-nowrap">
+                      ₹{Math.max(0, (Number(newRow.totalPrice) || 0) - (Number(newRow.advanceAmount) || 0)).toLocaleString()}
+                    </td>
+                    {/* Payment */}
+                    <td className="px-1 py-1">
+                      <select
+                        className="border rounded px-2 py-1 text-xs focus:ring-1 focus:ring-indigo-400 outline-none"
+                        value={newRow.paymentMode}
+                        onChange={(e) => setNewRow({ ...newRow, paymentMode: e.target.value })}
+                      >
+                        {PAYMENT_MODES.map((m) => <option key={m} value={m}>{m}</option>)}
+                      </select>
+                    </td>
+                    {/* Age */}
+                    <td className="px-1 py-1">
+                      <select
+                        className="border rounded px-2 py-1 text-xs focus:ring-1 focus:ring-indigo-400 outline-none"
+                        value={newRow.ageGroup}
+                        onChange={(e) => setNewRow({ ...newRow, ageGroup: e.target.value })}
+                      >
+                        {AGE_GROUPS.map((a) => <option key={a} value={a}>{a}</option>)}
+                      </select>
+                    </td>
+                    {/* Status placeholder */}
+                    <td className="px-3 py-2 text-xs text-gray-400">—</td>
+                    {/* Save / Cancel */}
+                    <td className="px-2 py-1 whitespace-nowrap">
+                      <div className="flex gap-1">
+                        <button
+                          onClick={saveNewRow}
+                          disabled={savingRow}
+                          className="px-3 py-1 bg-emerald-600 text-white rounded text-xs font-bold hover:bg-emerald-700 disabled:opacity-50"
+                        >
+                          {savingRow ? "…" : "✓ Save"}
+                        </button>
+                        <button
+                          onClick={() => setNewRow(null)}
+                          className="px-2 py-1 bg-gray-200 text-gray-600 rounded text-xs font-medium hover:bg-gray-300"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+
                 {filtered.map((b) => {
                   const bd = safeBreakdown(b.paymentBreakdown);
                   return (
@@ -362,6 +577,7 @@ export default function Dashboard({
                       <td className="px-3 py-2 text-gray-600 whitespace-nowrap uppercase">{b.tableId}</td>
                       <td className="px-3 py-2 text-gray-600 whitespace-nowrap">{b.bookingDate}</td>
                       <td className="px-3 py-2 text-center">{b.paxCount}</td>
+                      <td className="px-3 py-2 text-gray-500 text-xs whitespace-nowrap">{b.contactNo || "—"}</td>
                       <td className="px-3 py-2 text-gray-500 text-xs whitespace-nowrap">{b.tlcCardNo || "—"}</td>
                       <td className="px-3 py-2">
                         {b.handBandColor ? (
@@ -376,6 +592,7 @@ export default function Dashboard({
                           <span title={bd.map((p) => `${p.mode}: ₹${p.amount}`).join("\n")} className="underline decoration-dotted cursor-help">Multiple</span>
                         ) : b.paymentMode}
                       </td>
+                      <td className="px-3 py-2 text-xs text-gray-500 whitespace-nowrap">{b.ageGroup || "—"}</td>
                       <td className="px-3 py-2">
                         {b.arrived ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">✅ In</span>
