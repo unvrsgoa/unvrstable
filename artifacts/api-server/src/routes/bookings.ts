@@ -20,10 +20,10 @@ function buildShowFilter(show: string | undefined) {
 
 function computeStats(rows: typeof bookingsTable.$inferSelect[]) {
   const totalBookings = rows.length;
-  const totalPax = rows.reduce((s, b) => s + b.paxCount, 0);
-  const totalAdvance = rows.reduce((s, b) => s + b.advanceAmount, 0);
-  const totalBalance = rows.reduce((s, b) => s + b.balanceAmount, 0);
-  const totalAmount = rows.reduce((s, b) => s + b.totalPrice, 0);
+  const totalPax = rows.reduce((s, b) => s + (b.paxCount ?? 0), 0);
+  const totalAdvance = rows.reduce((s, b) => s + (b.advanceAmount ?? 0), 0);
+  const totalBalance = rows.reduce((s, b) => s + (b.balanceAmount ?? 0), 0);
+  const totalAmount = rows.reduce((s, b) => s + (b.totalPrice ?? 0), 0);
   const arrivedCount = rows.filter((b) => b.arrived).length;
 
   const byMode: Record<string, number> = {};
@@ -46,7 +46,7 @@ function computeStats(rows: typeof bookingsTable.$inferSelect[]) {
 
 function safeParseBreakdown(s: string | null | undefined): { mode: string; amount: number }[] {
   if (!s) return [];
-  try { return JSON.parse(s); } catch { return []; }
+  try { const r = JSON.parse(s); return Array.isArray(r) ? r : []; } catch { return []; }
 }
 
 // GET /bookings?event=chetas&show=Show+1

@@ -55,7 +55,7 @@ function safeBreakdown(s?: string | null): { mode: string; amount: number }[] {
   try { const r = JSON.parse(s); return Array.isArray(r) ? r : []; } catch { return []; }
 }
 
-function fmt(n: number) { return `₹${n.toLocaleString()}`; }
+function fmt(n: number | null | undefined) { return `₹${(n ?? 0).toLocaleString()}`; }
 
 export default function Dashboard({
   event,
