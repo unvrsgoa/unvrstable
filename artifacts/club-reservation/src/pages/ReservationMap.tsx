@@ -189,6 +189,26 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
     }
   };
 
+  const markAllAvailable = async () => {
+    const soldIds = activeLayout
+      .map((t) => t.id)
+      .filter((id) => tableData[id]?.status === "sold_out");
+    if (soldIds.length === 0) return;
+    if (!confirm(`Mark all ${soldIds.length} sold-out table(s) as Available?`)) return;
+    // Optimistic update
+    setTableData((prev) => {
+      const next = { ...prev };
+      soldIds.forEach((id) => { next[id] = { ...next[id], status: "available" }; });
+      return next;
+    });
+    try {
+      await Promise.all(soldIds.map((id) => patchTable(id, { status: "available" }, event)));
+      await loadTables(event);
+    } catch {
+      await loadTables(event);
+    }
+  };
+
   const startEdit = (id: string, price: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setEditing({ tableId: id, value: price });
@@ -277,7 +297,7 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
       </div>
 
       {/* Stats */}
-      <div className="flex justify-center gap-4 mb-4 flex-wrap">
+      <div className="flex justify-center gap-4 mb-4 flex-wrap items-center">
         <div className="flex items-center gap-2 bg-white rounded-lg px-4 py-2 shadow-sm border">
           <div className="w-3 h-3 rounded-full bg-emerald-500" />
           <span className="text-sm font-semibold">{availableCount} Available</span>
@@ -289,6 +309,14 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
         <div className="flex items-center gap-2 bg-white rounded-lg px-4 py-2 shadow-sm border">
           <span className="text-sm font-semibold">{activeLayout.length} Total Tables</span>
         </div>
+        {role !== "viewer" && soldOutCount > 0 && (
+          <button
+            onClick={markAllAvailable}
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-bold hover:bg-emerald-700 shadow-sm transition"
+          >
+            ✅ Mark All Available
+          </button>
+        )}
       </div>
 
       {/* Action panel */}
