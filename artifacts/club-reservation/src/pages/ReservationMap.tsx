@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import BookingModal, { type Booking } from "./BookingModal";
+import venueImage from "@assets/Untitled_design_(12)_1776290633388.png";
 
 type EventKey = "chetas" | "normal";
 
@@ -517,6 +518,22 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
       <p className="text-center text-xs text-gray-400 mt-3">
         Changes sync live across all devices &bull; Auto-refreshes every 5 seconds
       </p>
+
+      {/* 3D Venue Reference Image */}
+      <div className="mt-8 mb-4">
+        <div className="flex items-center gap-3 justify-center mb-3">
+          <div className="h-px flex-1 max-w-[120px] bg-gray-300" />
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Venue — 3D Top View</p>
+          <div className="h-px flex-1 max-w-[120px] bg-gray-300" />
+        </div>
+        <div className="max-w-3xl mx-auto rounded-2xl overflow-hidden shadow-xl border border-gray-200">
+          <img
+            src={venueImage}
+            alt="The Leela Club — 3D Venue Layout"
+            className="w-full h-auto object-contain"
+          />
+        </div>
+      </div>
     </div>
 
     {showBooking && selectedLayout && selectedData && (
