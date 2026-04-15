@@ -45,7 +45,7 @@ const PLATINUM = "#546E7A";
 // Image zones: header 0–87 | top tables 88–236 | side walls 237–875 | bottom 875–1024
 const LAYOUT: TableDef[] = [
   // ── PLATINUM (wide sections flanking the centre LED) ──
-  { id: "platinum1", label: "PLATINUM 1", bgColor: PLATINUM, left: 158, top: 96,  width: 116, height: 62 },
+  { id: "platinum1", label: "PLATINUM 1", bgColor: PLATINUM, left: 138, top: 96,  width: 116, height: 62 },
   { id: "platinum2", label: "PLATINUM 2", bgColor: PLATINUM, left: 516, top: 96,  width: 116, height: 62 },
 
   // ── GOLD row — 3 left + 3 right ──
