@@ -386,66 +386,24 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
         </div>
       )}
 
-      {/* Floor Map */}
+      {/* Floor Map — 3D venue image with interactive table overlays */}
       <div className="flex justify-center">
         <div
-          className="relative bg-white rounded-2xl shadow-xl border-2 border-gray-200 overflow-hidden"
-          style={{ width: "min(92vw, 700px)" }}
+          className="relative rounded-2xl shadow-2xl overflow-hidden"
+          style={{ width: "min(92vw, 750px)" }}
         >
           <div style={{ paddingBottom: `${(970 / 750) * 100}%`, position: "relative" }}>
-            <div className="absolute inset-0">
-              {/* LED screen */}
-              <div
-                className="absolute flex items-center justify-center border border-gray-300 rounded bg-white text-gray-500 font-semibold"
-                style={{ top: pct(8, H), left: pct(210, W), width: pct(330, W), height: pct(30, H), fontSize: "min(1.6vw, 12px)" }}
-              >
-                LED screen
-              </div>
+            {/* 3D venue image as the background */}
+            <img
+              src={venueImage}
+              alt="The Leela Club — Venue Layout"
+              className="absolute inset-0 w-full h-full"
+              style={{ objectFit: "fill", zIndex: 0, display: "block" }}
+              draggable={false}
+            />
 
-              {/* DJ table */}
-              <div
-                className="absolute flex items-center justify-center border border-gray-400 rounded bg-white text-gray-600 font-semibold"
-                style={{ top: pct(55, H), left: pct(290, W), width: pct(170, W), height: pct(35, H), fontSize: "min(1.6vw, 12px)" }}
-              >
-                DJ table
-              </div>
-
-              {/* Performance stage */}
-              <div
-                className="absolute flex items-center justify-center bg-gray-100 border border-gray-300 rounded"
-                style={{ top: pct(124, H), left: "50%", transform: "translateX(-50%)", width: pct(42, W), height: pct(218, H) }}
-              >
-                <span
-                  className="text-gray-500 font-bold tracking-widest select-none"
-                  style={{ writingMode: "vertical-rl", transform: "rotate(180deg)", fontSize: "min(1.1vw, 9px)", letterSpacing: "0.08em" }}
-                >
-                  PERFORMANCE STAGE
-                </span>
-              </div>
-
-              {/* Lift stage circle */}
-              <div
-                className="absolute flex items-center justify-center rounded-full bg-gray-100 border border-gray-300 text-gray-500 font-semibold text-center select-none"
-                style={{ top: pct(290, H), left: "50%", transform: "translateX(-50%)", width: pct(110, W), height: pct(110, H), fontSize: "min(1.4vw, 11px)" }}
-              >
-                LIFT<br />STAGE
-              </div>
-
-              {/* D zone border */}
-              <div
-                className="absolute border-2 border-dashed border-gray-400 rounded-lg pointer-events-none"
-                style={{ top: pct(683, H), left: pct(145, W), width: pct(460, W), height: pct(128, H) }}
-              />
-
-              {/* Lift box */}
-              <div
-                className="absolute flex items-center justify-center border border-gray-400 rounded bg-white text-gray-500 font-semibold"
-                style={{ top: pct(653, H), right: pct(6, W), width: pct(35, W), height: pct(80, H), fontSize: "min(1.2vw, 10px)" }}
-              >
-                <span style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}>LIFT</span>
-              </div>
-
-              {/* Tables */}
+            {/* Table buttons overlaid on the image */}
+            <div className="absolute inset-0" style={{ zIndex: 1 }}>
               {activeLayout.map((t) => {
                 const data = tableData[t.id];
                 const isSold = data?.status === "sold_out";
@@ -462,13 +420,15 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
                     <div
                       className="absolute inset-0 rounded-md flex flex-col items-center justify-center transition-all"
                       style={{
-                        backgroundColor: isSold ? "#6b7280" : t.bgColor,
-                        opacity: isSold ? 0.7 : 1,
-                        boxShadow: isSel ? "0 0 0 3px #fbbf24" : "inset 0 1px 0 rgba(255,255,255,0.2)",
+                        backgroundColor: isSold ? "rgba(107,114,128,0.88)" : t.bgColor + "dd",
+                        boxShadow: isSel
+                          ? "0 0 0 3px #fbbf24, 0 0 12px 3px rgba(251,191,36,0.6)"
+                          : "0 1px 4px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2)",
+                        backdropFilter: "blur(1px)",
                       }}
                     >
                       <span
-                        className="text-white font-bold leading-tight text-center"
+                        className="text-white font-bold leading-tight text-center drop-shadow"
                         style={{ fontSize: t.fontSize ?? "min(1.4vw, 10px)", lineHeight: 1.2, padding: "1px 2px" }}
                       >
                         {t.label.split("\n").map((line, i) => (
@@ -477,14 +437,20 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
                       </span>
                       {isSold && (
                         <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
-                          <line x1="10" y1="10" x2="90" y2="90" stroke="white" strokeWidth="4" opacity="0.6" />
-                          <line x1="90" y1="10" x2="10" y2="90" stroke="white" strokeWidth="4" opacity="0.6" />
+                          <line x1="10" y1="10" x2="90" y2="90" stroke="white" strokeWidth="4" opacity="0.7" />
+                          <line x1="90" y1="10" x2="10" y2="90" stroke="white" strokeWidth="4" opacity="0.7" />
                         </svg>
                       )}
                     </div>
                     <div
-                      className="absolute w-full text-center font-medium text-gray-700"
-                      style={{ top: "calc(100% + 2px)", fontSize: "min(1.2vw, 9px)", lineHeight: 1.3 }}
+                      className="absolute w-full text-center font-bold"
+                      style={{
+                        top: "calc(100% + 2px)",
+                        fontSize: "min(1.1vw, 8.5px)",
+                        lineHeight: 1.3,
+                        color: "#fff",
+                        textShadow: "0 1px 3px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.8)",
+                      }}
                     >
                       {priceLines.map((line, i) => <div key={i}>{line}</div>)}
                     </div>
@@ -519,21 +485,6 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
         Changes sync live across all devices &bull; Auto-refreshes every 5 seconds
       </p>
 
-      {/* 3D Venue Reference Image */}
-      <div className="mt-8 mb-4">
-        <div className="flex items-center gap-3 justify-center mb-3">
-          <div className="h-px flex-1 max-w-[120px] bg-gray-300" />
-          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Venue — 3D Top View</p>
-          <div className="h-px flex-1 max-w-[120px] bg-gray-300" />
-        </div>
-        <div className="max-w-3xl mx-auto rounded-2xl overflow-hidden shadow-xl border border-gray-200">
-          <img
-            src={venueImage}
-            alt="The Leela Club — 3D Venue Layout"
-            className="w-full h-auto object-contain"
-          />
-        </div>
-      </div>
     </div>
 
     {showBooking && selectedLayout && selectedData && (
