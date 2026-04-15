@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import BookingModal, { type Booking } from "./BookingModal";
-import venueImage from "@assets/Untitled_design_(12)_1776290633388.png";
+import venueImage from "@assets/Untitled_design_(13)_1776296499316.png";
 
 type EventKey = "chetas" | "normal";
 
@@ -23,9 +23,9 @@ interface TableDef {
   height: number;
 }
 
-// Total virtual canvas: 750 wide, 970 tall
+// Virtual canvas matched to reference image (755×962 ≈ 750×960)
 const W = 750;
-const H = 970;
+const H = 960;
 
 function pct(val: number, total: number) {
   return `${((val / total) * 100).toFixed(3)}%`;
@@ -40,92 +40,94 @@ const S_TABLE = "#2E7D32";
 const D_TABLE = "#4527A0";
 const PLATINUM = "#546E7A";
 
-// Coordinates remapped to the 3D venue image (W=750 × H=970 virtual canvas).
-// Image zones: header 0-56, top fixtures 56-148, side walls 148-780, bottom 780-970.
+// Pixel-accurate coordinates traced from the 2D reference floor plan image.
+// Canvas W=750, H=960 matches the reference image (755×962).
+// Image zones: header 0–82 | top tables 82–220 | side walls 222–820 | bottom 820–960
 const LAYOUT: TableDef[] = [
-  // ── PLATINUM (wide sofa/table sections at top, flanking the LED screen) ──
-  { id: "platinum1", label: "PLATINUM 1", bgColor: PLATINUM, left: 134, top: 62, width: 138, height: 40 },
-  { id: "platinum2", label: "PLATINUM 2", bgColor: PLATINUM, left: 478, top: 62, width: 138, height: 40 },
+  // ── PLATINUM (wide sections flanking the center LED, below header) ──
+  { id: "platinum1", label: "PLATINUM 1", bgColor: PLATINUM, left: 118, top: 90,  width: 116, height: 58 },
+  { id: "platinum2", label: "PLATINUM 2", bgColor: PLATINUM, left: 484, top: 90,  width: 116, height: 58 },
 
-  // ── GOLD (top corners, two trios left + right) ──
-  { id: "gold1", label: "GOLD-1",      bgColor: GOLD,     left:   8, top: 112, width: 68, height: 46 },
-  { id: "gold2", label: "GOLD-2",      bgColor: GOLD,     left:  84, top: 112, width: 68, height: 46 },
-  { id: "gold3", label: "GOLD-3\nVIP", bgColor: VIP_GOLD, left: 160, top: 112, width: 68, height: 46 },
-  { id: "gold4", label: "GOLD-4\nVIP", bgColor: VIP_GOLD, left: 522, top: 112, width: 68, height: 46 },
-  { id: "gold5", label: "GOLD-5",      bgColor: GOLD,     left: 598, top: 112, width: 68, height: 46 },
-  { id: "gold6", label: "GOLD-6",      bgColor: GOLD,     left: 674, top: 112, width: 68, height: 46 },
+  // ── GOLD row: 3 left (GOLD1/2/VIP3) + 3 right (VIP4/GOLD5/6) ──
+  { id: "gold1", label: "GOLD 1",       bgColor: GOLD,     left:  10, top: 163, width: 82, height: 52 },
+  { id: "gold2", label: "GOLD 2",       bgColor: GOLD,     left:  97, top: 163, width: 82, height: 52 },
+  { id: "gold3", label: "GOLD\nVIP 3",  bgColor: VIP_GOLD, left: 184, top: 163, width: 82, height: 52 },
+  { id: "gold4", label: "GOLD\nVIP 4",  bgColor: VIP_GOLD, left: 452, top: 163, width: 82, height: 52 },
+  { id: "gold5", label: "GOLD 5",       bgColor: GOLD,     left: 539, top: 163, width: 82, height: 52 },
+  { id: "gold6", label: "GOLD 6",       bgColor: GOLD,     left: 626, top: 163, width: 82, height: 52 },
 
-  // ── VIP LEFT BOOTHS (7 sections, left wall) ──
-  { id: "vipl1", label: "VIP-L1", bgColor: VIP_BOOTH, left: 4, top: 168, width: 112, height: 84 },
-  { id: "vipl2", label: "VIP-L2", bgColor: VIP_BOOTH, left: 4, top: 258, width: 112, height: 84 },
-  { id: "vipl3", label: "VIP-L3", bgColor: VIP_BOOTH, left: 4, top: 348, width: 112, height: 84 },
-  { id: "vipl4", label: "VIP-L4", bgColor: VIP_BOOTH, left: 4, top: 438, width: 112, height: 84 },
-  { id: "vipl5", label: "VIP-L5", bgColor: VIP_BOOTH, left: 4, top: 528, width: 112, height: 84 },
-  { id: "vipl6", label: "VIP-L6", bgColor: VIP_BOOTH, left: 4, top: 618, width: 112, height: 84 },
-  { id: "vipl7", label: "VIP-L7", bgColor: VIP_BOOTH, left: 4, top: 706, width: 112, height: 84 },
+  // ── VIP LEFT BOOTHS — 7 sections, evenly spaced down the left wall ──
+  { id: "vipl1", label: "VIP L1", bgColor: VIP_BOOTH, left: 0, top: 222, width: 124, height: 82 },
+  { id: "vipl2", label: "VIP L2", bgColor: VIP_BOOTH, left: 0, top: 306, width: 124, height: 82 },
+  { id: "vipl3", label: "VIP L3", bgColor: VIP_BOOTH, left: 0, top: 390, width: 124, height: 82 },
+  { id: "vipl4", label: "VIP L4", bgColor: VIP_BOOTH, left: 0, top: 474, width: 124, height: 82 },
+  { id: "vipl5", label: "VIP L5", bgColor: VIP_BOOTH, left: 0, top: 558, width: 124, height: 82 },
+  { id: "vipl6", label: "VIP L6", bgColor: VIP_BOOTH, left: 0, top: 642, width: 124, height: 82 },
+  { id: "vipl7", label: "VIP L7", bgColor: VIP_BOOTH, left: 0, top: 726, width: 124, height: 82 },
 
-  // ── VIP RIGHT BOOTHS (6 sections, right wall) ──
-  { id: "vipr1", label: "VIP-R1", bgColor: VIP_BOOTH, left: 634, top: 168, width: 112, height: 84 },
-  { id: "vipr2", label: "VIP-R2", bgColor: VIP_BOOTH, left: 634, top: 258, width: 112, height: 84 },
-  { id: "vipr3", label: "VIP-R3", bgColor: VIP_BOOTH, left: 634, top: 348, width: 112, height: 84 },
-  { id: "vipr4", label: "VIP-R4", bgColor: VIP_BOOTH, left: 634, top: 438, width: 112, height: 84 },
-  { id: "vipr5", label: "VIP-R5", bgColor: VIP_BOOTH, left: 634, top: 528, width: 112, height: 84 },
-  { id: "vipr6", label: "VIP-R6", bgColor: VIP_BOOTH, left: 634, top: 618, width: 112, height: 84 },
+  // ── VIP RIGHT BOOTHS — 6 sections, right wall ──
+  { id: "vipr1", label: "VIP R1", bgColor: VIP_BOOTH, left: 590, top: 222, width: 124, height: 82 },
+  { id: "vipr2", label: "VIP R2", bgColor: VIP_BOOTH, left: 590, top: 306, width: 124, height: 82 },
+  { id: "vipr3", label: "VIP R3", bgColor: VIP_BOOTH, left: 590, top: 390, width: 124, height: 82 },
+  { id: "vipr4", label: "VIP R4", bgColor: VIP_BOOTH, left: 590, top: 474, width: 124, height: 82 },
+  { id: "vipr5", label: "VIP R5", bgColor: VIP_BOOTH, left: 590, top: 558, width: 124, height: 82 },
+  { id: "vipr6", label: "VIP R6", bgColor: VIP_BOOTH, left: 590, top: 642, width: 124, height: 82 },
 
-  // ── F-TABLES LEFT ── inner column (next to VIP booths, col A)
-  { id: "f7",  label: "F-7",  bgColor: F_TABLE, left: 178, top: 168, width: 50, height: 42 },
-  { id: "f12", label: "F-12", bgColor: F_TABLE, left: 234, top: 168, width: 50, height: 42 },
-  { id: "f8",  label: "F-8",  bgColor: F_TABLE, left: 178, top: 222, width: 50, height: 42 },
-  { id: "f9",  label: "F-9",  bgColor: F_TABLE, left: 178, top: 276, width: 50, height: 42 },
-  { id: "f10", label: "F-10", bgColor: F_TABLE, left: 178, top: 330, width: 50, height: 42 },
-  { id: "f11", label: "F-11", bgColor: F_TABLE, left: 178, top: 384, width: 50, height: 42 },
-  // outer secondary column (col B — between booths & col A)
-  { id: "f6",  label: "F-6",  bgColor: F_TABLE, left: 120, top: 276, width: 50, height: 42 },
-  { id: "f5",  label: "F-5",  bgColor: F_TABLE, left: 120, top: 330, width: 50, height: 42 },
-  { id: "f4",  label: "F-4",  bgColor: F_TABLE, left: 120, top: 384, width: 50, height: 42 },
-  { id: "f3",  label: "F-3",  bgColor: F_TABLE, left: 120, top: 480, width: 50, height: 42 },
-  { id: "f2",  label: "F-2",  bgColor: F_TABLE, left: 120, top: 534, width: 50, height: 42 },
-  { id: "f1",  label: "F-1",  bgColor: F_TABLE, left: 120, top: 588, width: 50, height: 42 },
+  // ── F-TABLES LEFT ──
+  // Col-A (inner, x≈193): F7, F8 + F9…F11 continuing down
+  { id: "f7",  label: "F7",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 193, top: 225, width: 40, height: 38 },
+  { id: "f12", label: "F12", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 240, top: 225, width: 40, height: 38 },
+  { id: "f8",  label: "F8",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 200, top: 282, width: 40, height: 38 },
+  // Col-B (outer, x≈151): F6/F5/F4 paired beside F9/F10/F11; then F3/F2/F1 solo
+  { id: "f6",  label: "F6",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 151, top: 345, width: 40, height: 38 },
+  { id: "f9",  label: "F9",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 200, top: 345, width: 40, height: 38 },
+  { id: "f5",  label: "F5",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 151, top: 415, width: 40, height: 38 },
+  { id: "f10", label: "F10", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 200, top: 415, width: 40, height: 38 },
+  { id: "f4",  label: "F4",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 151, top: 483, width: 40, height: 38 },
+  { id: "f11", label: "F11", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 200, top: 483, width: 40, height: 38 },
+  { id: "f3",  label: "F3",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 151, top: 560, width: 40, height: 38 },
+  { id: "f2",  label: "F2",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 151, top: 630, width: 40, height: 38 },
+  { id: "f1",  label: "F1",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 151, top: 700, width: 40, height: 38 },
 
-  // ── F-TABLES RIGHT ── (mirror of left)
-  { id: "f14", label: "F-14", bgColor: F_TABLE, left: 466, top: 168, width: 50, height: 42 },
-  { id: "f15", label: "F-15", bgColor: F_TABLE, left: 522, top: 168, width: 50, height: 42 },
-  { id: "f16", label: "F-16", bgColor: F_TABLE, left: 522, top: 222, width: 50, height: 42 },
-  { id: "f17", label: "F-17", bgColor: F_TABLE, left: 522, top: 276, width: 50, height: 42 },
-  { id: "f18", label: "F-18", bgColor: F_TABLE, left: 522, top: 330, width: 50, height: 42 },
-  { id: "f19", label: "F-19", bgColor: F_TABLE, left: 522, top: 384, width: 50, height: 42 },
-  { id: "f20", label: "F-20", bgColor: F_TABLE, left: 580, top: 276, width: 50, height: 42 },
-  { id: "f21", label: "F-21", bgColor: F_TABLE, left: 580, top: 330, width: 50, height: 42 },
-  { id: "f22", label: "F-22", bgColor: F_TABLE, left: 580, top: 384, width: 50, height: 42 },
-  { id: "f23", label: "F-23", bgColor: F_TABLE, left: 580, top: 480, width: 50, height: 42 },
-  { id: "f24", label: "F-24", bgColor: F_TABLE, left: 580, top: 534, width: 50, height: 42 },
-  { id: "f25", label: "F-25", bgColor: F_TABLE, left: 580, top: 588, width: 50, height: 42 },
+  // ── F-TABLES RIGHT (mirror) ──
+  { id: "f14", label: "F14", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 449, top: 225, width: 40, height: 38 },
+  { id: "f15", label: "F15", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 496, top: 225, width: 40, height: 38 },
+  { id: "f16", label: "F16", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 496, top: 282, width: 40, height: 38 },
+  { id: "f17", label: "F17", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 496, top: 345, width: 40, height: 38 },
+  { id: "f20", label: "F20", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 543, top: 345, width: 40, height: 38 },
+  { id: "f18", label: "F18", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 496, top: 415, width: 40, height: 38 },
+  { id: "f21", label: "F21", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 543, top: 415, width: 40, height: 38 },
+  { id: "f19", label: "F19", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 496, top: 483, width: 40, height: 38 },
+  { id: "f22", label: "F22", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 543, top: 483, width: 40, height: 38 },
+  { id: "f23", label: "F23", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 543, top: 560, width: 40, height: 38 },
+  { id: "f24", label: "F24", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 543, top: 630, width: 40, height: 38 },
+  { id: "f25", label: "F25", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 543, top: 700, width: 40, height: 38 },
 
-  // ── S-TABLES (center 4-row × 2-col grid) ──
-  { id: "s1", label: "S1", bgColor: S_TABLE, left: 300, top: 410, width: 50, height: 42 },
-  { id: "s2", label: "S2", bgColor: S_TABLE, left: 358, top: 410, width: 50, height: 42 },
-  { id: "s3", label: "S3", bgColor: S_TABLE, left: 300, top: 460, width: 50, height: 42 },
-  { id: "s4", label: "S4", bgColor: S_TABLE, left: 358, top: 460, width: 50, height: 42 },
-  { id: "s5", label: "S5", bgColor: S_TABLE, left: 300, top: 510, width: 50, height: 42 },
-  { id: "s6", label: "S6", bgColor: S_TABLE, left: 358, top: 510, width: 50, height: 42 },
-  { id: "s7", label: "S7", bgColor: S_TABLE, left: 300, top: 560, width: 50, height: 42 },
-  { id: "s8", label: "S8", bgColor: S_TABLE, left: 358, top: 560, width: 50, height: 42 },
+  // ── S-TABLES (center floor, 4-row × 2-col) ──
+  { id: "s1", label: "S1", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 308, top: 492, width: 42, height: 38 },
+  { id: "s2", label: "S2", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 357, top: 492, width: 42, height: 38 },
+  { id: "s3", label: "S3", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 308, top: 540, width: 42, height: 38 },
+  { id: "s4", label: "S4", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 357, top: 540, width: 42, height: 38 },
+  { id: "s5", label: "S5", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 308, top: 588, width: 42, height: 38 },
+  { id: "s6", label: "S6", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 357, top: 588, width: 42, height: 38 },
+  { id: "s7", label: "S7", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 308, top: 636, width: 42, height: 38 },
+  { id: "s8", label: "S8", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 357, top: 636, width: 42, height: 38 },
 
-  // ── D-TABLES (row of 8 across the bottom section) ──
-  { id: "d1",  label: "D-1",  bgColor: D_TABLE, left: 118, top: 778, width: 56, height: 46 },
-  { id: "d2",  label: "D-2",  bgColor: D_TABLE, left: 181, top: 778, width: 56, height: 46 },
-  { id: "d3",  label: "D-3",  bgColor: D_TABLE, left: 244, top: 778, width: 56, height: 46 },
-  { id: "d4",  label: "D-4",  bgColor: D_TABLE, left: 307, top: 778, width: 56, height: 46 },
-  { id: "d5",  label: "D-5",  bgColor: D_TABLE, left: 370, top: 778, width: 56, height: 46 },
-  { id: "d6",  label: "D-6",  bgColor: D_TABLE, left: 433, top: 778, width: 56, height: 46 },
-  { id: "d7",  label: "D-7",  bgColor: D_TABLE, left: 496, top: 778, width: 56, height: 46 },
-  { id: "d8",  label: "D-8",  bgColor: D_TABLE, left: 559, top: 778, width: 56, height: 46 },
-  // D-9 & D-10 below main row (lower-right pocket)
-  { id: "d9",  label: "D-9",  bgColor: D_TABLE, left: 496, top: 848, width: 56, height: 46 },
-  { id: "d10", label: "D-10", bgColor: D_TABLE, left: 559, top: 848, width: 56, height: 46 },
+  // ── D-TABLES — row of 8 at the bottom zone ──
+  { id: "d1",  label: "D1",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 222, top: 820, width: 38, height: 36 },
+  { id: "d2",  label: "D2",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 265, top: 820, width: 38, height: 36 },
+  { id: "d3",  label: "D3",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 308, top: 820, width: 38, height: 36 },
+  { id: "d4",  label: "D4",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 351, top: 820, width: 38, height: 36 },
+  { id: "d5",  label: "D5",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 394, top: 820, width: 38, height: 36 },
+  { id: "d6",  label: "D6",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 437, top: 820, width: 38, height: 36 },
+  { id: "d7",  label: "D7",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 480, top: 820, width: 38, height: 36 },
+  { id: "d8",  label: "D8",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 523, top: 820, width: 38, height: 36 },
+  // D9 & D10 — lower-right pocket
+  { id: "d9",  label: "D9",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 498, top: 868, width: 38, height: 36 },
+  { id: "d10", label: "D10", bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 542, top: 868, width: 38, height: 36 },
 
-  // ── RD-1 (sofa corner at bottom-left of lower section) ──
-  { id: "rd1", label: "RD-1", bgColor: "#8B6914", left: 222, top: 888, width: 128, height: 68 },
+  // ── ROYAL DIAMOND 1 (large sofa at very bottom) ──
+  { id: "rd1", label: "ROYAL\nDIAMOND 1", bgColor: "#8B6914", left: 262, top: 900, width: 172, height: 56 },
 ];
 
 const CHETAS_LAYOUT: TableDef[] = [];
@@ -413,11 +415,11 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
           className="relative rounded-2xl shadow-2xl overflow-hidden"
           style={{ width: "min(92vw, 750px)" }}
         >
-          <div style={{ paddingBottom: `${(970 / 750) * 100}%`, position: "relative" }}>
-            {/* 3D venue image as the background */}
+          <div style={{ paddingBottom: `${(H / W) * 100}%`, position: "relative" }}>
+            {/* Floor plan image — buttons are overlaid at traced positions */}
             <img
               src={venueImage}
-              alt="The Leela Club — Venue Layout"
+              alt="The Leela Club — Floor Plan"
               className="absolute inset-0 w-full h-full"
               style={{ objectFit: "fill", zIndex: 0, display: "block" }}
               draggable={false}
