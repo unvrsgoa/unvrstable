@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import BookingModal, { type Booking } from "./BookingModal";
 import venueImage from "@assets/Untitled_design_(13)_1776296499316.png";
+import soldOutImg from "@assets/image-removebg-preview_(3)_1776300813468.png";
 
 type EventKey = "chetas" | "normal";
 
@@ -453,10 +454,12 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
                         ))}
                       </span>
                       {isSold && (
-                        <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
-                          <line x1="10" y1="10" x2="90" y2="90" stroke="white" strokeWidth="4" opacity="0.7" />
-                          <line x1="90" y1="10" x2="10" y2="90" stroke="white" strokeWidth="4" opacity="0.7" />
-                        </svg>
+                        <img
+                          src={soldOutImg}
+                          alt="Sold Out"
+                          className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+                          style={{ padding: "2px" }}
+                        />
                       )}
                     </div>
                     <div
