@@ -441,8 +441,10 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
                       className="absolute inset-0 rounded-md flex flex-col items-center justify-center transition-all"
                       style={{
                         backgroundColor: "transparent",
-                        boxShadow: isSel ? "0 0 0 3px #fbbf24" : "none",
+                        boxShadow: "none",
                         backdropFilter: "none",
+                        outline: "none",
+                        border: "none",
                       }}
                     >
                       <span
