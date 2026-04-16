@@ -89,7 +89,7 @@ const LAYOUT: TableDef[] = [
   { id: "f1",  label: "F1",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 170, top: 746, width: 40, height: 40 },
 
   // ── F-TABLES RIGHT (mirror) ──
-  { id: "f14", label: "F14", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 449, top: 263, width: 40, height: 40 },
+  { id: "f14", label: "F14", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 452, top: 263, width: 40, height: 40 },
   { id: "f15", label: "F15", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 506, top: 263, width: 40, height: 40 },
   { id: "f16", label: "F16", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 506, top: 334, width: 40, height: 40 },
   { id: "f17", label: "F17", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 506, top: 401, width: 40, height: 40 },
