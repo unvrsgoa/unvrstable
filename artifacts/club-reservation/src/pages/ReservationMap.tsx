@@ -459,16 +459,7 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
                         </svg>
                       )}
                     </div>
-                    <div
-                      className="absolute w-full text-center font-bold"
-                      style={{
-                        top: "calc(100% + 2px)",
-                        fontSize: "min(1.1vw, 8.5px)",
-                        lineHeight: 1.3,
-                        color: "#fff",
-                        textShadow: "0 1px 3px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.8)",
-                      }}
-                    >
+                    <div className="hidden">
                       {priceLines.map((line, i) => <div key={i}>{line}</div>)}
                     </div>
                   </div>
