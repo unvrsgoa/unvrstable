@@ -418,7 +418,7 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
               src={venueImage}
               alt="The Leela Club — Floor Plan"
               className="absolute w-full h-full"
-              style={{ objectFit: "fill", zIndex: 0, display: "block", top: 0, left: "10px" }}
+              style={{ objectFit: "fill", zIndex: 0, display: "block", top: 0, left: "5px" }}
               draggable={false}
             />
 
