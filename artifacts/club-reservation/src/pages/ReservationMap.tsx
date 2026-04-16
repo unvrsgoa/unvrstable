@@ -105,9 +105,9 @@ const LAYOUT: TableDef[] = [
   { id: "s1", label: "S1", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 308, top: 524, width: 42, height: 40 },
   { id: "s2", label: "S2", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 357, top: 524, width: 42, height: 40 },
   { id: "s3", label: "S3", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 406, top: 524, width: 42, height: 40 },
-  { id: "s4", label: "S4", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 357, top: 576, width: 42, height: 40 },
-  { id: "s5", label: "S5", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 308, top: 627, width: 42, height: 40 },
-  { id: "s6", label: "S6", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 357, top: 627, width: 42, height: 40 },
+  { id: "s4", label: "S4", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 308, top: 576, width: 42, height: 40 },
+  { id: "s5", label: "S5", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 357, top: 576, width: 42, height: 40 },
+  { id: "s6", label: "S6", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 406, top: 576, width: 42, height: 40 },
   { id: "s7", label: "S7", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 308, top: 678, width: 42, height: 40 },
   { id: "s8", label: "S8", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 357, top: 678, width: 42, height: 40 },
 
