@@ -466,7 +466,7 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
                       className="absolute w-full text-center font-bold"
                       style={{
                         ...(t.id.startsWith("vipl")
-                          ? { bottom: "calc(100% - 64px)", top: "auto" }
+                          ? { top: "50%", transform: "translateY(-50%)" }
                           : t.id.startsWith("vipr")
                           ? { top: "calc(100% - 48px)" }
                           : t.id.startsWith("f")
