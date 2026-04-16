@@ -75,7 +75,7 @@ const LAYOUT: TableDef[] = [
 
   // ── F-TABLES LEFT ──
   { id: "f7",  label: "F7",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 245, top: 263, width: 40, height: 40 },
-  { id: "f12", label: "F12", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 300, top: 240, width: 40, height: 40 },
+  { id: "f12", label: "F12", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 300, top: 255, width: 40, height: 40 },
   { id: "f8",  label: "F8",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 245, top: 324, width: 40, height: 40 },
   { id: "f6",  label: "F6",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 173, top: 368, width: 40, height: 40 },
   { id: "f9",  label: "F9",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 245, top: 391, width: 40, height: 40 },
