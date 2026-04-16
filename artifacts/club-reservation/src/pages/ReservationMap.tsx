@@ -31,14 +31,14 @@ function pct(val: number, total: number) {
   return `${((val / total) * 100).toFixed(3)}%`;
 }
 
-const GOLD = "#283593";
-const GOLD_STANDY = "#1565C0";
-const VIP_GOLD = "#C62828";
-const VIP_BOOTH = "#B8860B";
-const F_TABLE = "#C2185B";
-const S_TABLE = "#2E7D32";
-const D_TABLE = "#4527A0";
-const PLATINUM = "#546E7A";
+const GOLD = "transparent";
+const GOLD_STANDY = "transparent";
+const VIP_GOLD = "transparent";
+const VIP_BOOTH = "transparent";
+const F_TABLE = "transparent";
+const S_TABLE = "transparent";
+const D_TABLE = "transparent";
+const PLATINUM = "transparent";
 
 // Pixel-accurate coordinates — image 3645×4977, canvas W=750 H=1024 (same ratio 1.3654)
 // All Y values traced proportionally: yCanvas = (yImage/4977) * 1024
@@ -123,7 +123,7 @@ const LAYOUT: TableDef[] = [
   { id: "d10", label: "D10", bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 562, top: 866, width: 38, height: 38 },
 
   // ── ROYAL DIAMOND 1 ──
-  { id: "rd1", label: "ROYAL\nDIAMOND 1", bgColor: "#8B6914", left: 240, top: 892, width: 110, height: 95 },
+  { id: "rd1", label: "ROYAL\nDIAMOND 1", bgColor: "transparent", left: 240, top: 892, width: 110, height: 95 },
 ];
 
 const CHETAS_LAYOUT: TableDef[] = [];
