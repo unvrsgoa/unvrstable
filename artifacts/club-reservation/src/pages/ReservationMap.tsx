@@ -102,12 +102,12 @@ const LAYOUT: TableDef[] = [
   { id: "f25", label: "F25", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 558, top: 727, width: 40, height: 40 },
 
   // ── S-TABLES (centre floor 4-row × 2-col) ──
-  { id: "s1", label: "S1", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 308, top: 524, width: 42, height: 40 },
-  { id: "s2", label: "S2", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 357, top: 524, width: 42, height: 40 },
-  { id: "s3", label: "S3", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 406, top: 524, width: 42, height: 40 },
-  { id: "s4", label: "S4", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 308, top: 576, width: 42, height: 40 },
-  { id: "s5", label: "S5", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 357, top: 576, width: 42, height: 40 },
-  { id: "s6", label: "S6", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 406, top: 576, width: 42, height: 40 },
+  { id: "s1", label: "S1", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 316, top: 524, width: 42, height: 40 },
+  { id: "s2", label: "S2", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 365, top: 524, width: 42, height: 40 },
+  { id: "s3", label: "S3", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 414, top: 524, width: 42, height: 40 },
+  { id: "s4", label: "S4", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 316, top: 576, width: 42, height: 40 },
+  { id: "s5", label: "S5", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 365, top: 576, width: 42, height: 40 },
+  { id: "s6", label: "S6", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 414, top: 576, width: 42, height: 40 },
 
   // ── D-TABLES — row of 8 across the bottom ──
   { id: "d1",  label: "D1",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 222, top: 875, width: 38, height: 38 },
