@@ -81,7 +81,7 @@ const LAYOUT: TableDef[] = [
   { id: "f9",  label: "F9",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 200, top: 368, width: 40, height: 40 },
   { id: "f5",  label: "F5",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 166, top: 442, width: 40, height: 40 },
   { id: "f10", label: "F10", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 200, top: 442, width: 40, height: 40 },
-  { id: "f4",  label: "F4",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 166, top: 515, width: 40, height: 40 },
+  { id: "f4",  label: "F4",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 166, top: 500, width: 40, height: 40 },
   { id: "f11", label: "F11", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 215, top: 515, width: 40, height: 40 },
   { id: "f3",  label: "F3",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 173, top: 627, width: 40, height: 40 },
   { id: "f2",  label: "F2",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 173, top: 685, width: 40, height: 40 },
