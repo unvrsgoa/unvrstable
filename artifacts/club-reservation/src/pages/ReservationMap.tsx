@@ -123,7 +123,7 @@ const LAYOUT: TableDef[] = [
   { id: "d10", label: "D10", bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 562, top: 866, width: 38, height: 38 },
 
   // ── ROYAL DIAMOND 1 ──
-  { id: "rd1", label: "ROYAL\nDIAMOND 1", bgColor: "#8B6914", left: 262, top: 962, width: 172, height: 58 },
+  { id: "rd1", label: "ROYAL\nDIAMOND 1", bgColor: "#8B6914", left: 212, top: 862, width: 172, height: 58 },
 ];
 
 const CHETAS_LAYOUT: TableDef[] = [];
