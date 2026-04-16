@@ -57,13 +57,13 @@ const LAYOUT: TableDef[] = [
   { id: "gold6", label: "GOLD 6",      bgColor: GOLD,     left: 626, top: 174, width: 82, height: 55 },
 
   // ── VIP LEFT — 7 sections × 87 px = 609 px total (y 252–846) ──
-  { id: "vipl1", label: "VIP L1", bgColor: VIP_BOOTH, left: 15, top: 252, width: 124, height: 87 },
-  { id: "vipl2", label: "VIP L2", bgColor: VIP_BOOTH, left: 15, top: 339, width: 124, height: 87 },
-  { id: "vipl3", label: "VIP L3", bgColor: VIP_BOOTH, left: 15, top: 426, width: 124, height: 87 },
-  { id: "vipl4", label: "VIP L4", bgColor: VIP_BOOTH, left: 15, top: 513, width: 124, height: 87 },
-  { id: "vipl5", label: "VIP L5", bgColor: VIP_BOOTH, left: 15, top: 600, width: 124, height: 87 },
-  { id: "vipl6", label: "VIP L6", bgColor: VIP_BOOTH, left: 15, top: 687, width: 124, height: 87 },
-  { id: "vipl7", label: "VIP L7", bgColor: VIP_BOOTH, left: 15, top: 774, width: 124, height: 87 },
+  { id: "vipl1", label: "VIP L1", bgColor: VIP_BOOTH, left: 30, top: 252, width: 124, height: 87 },
+  { id: "vipl2", label: "VIP L2", bgColor: VIP_BOOTH, left: 30, top: 339, width: 124, height: 87 },
+  { id: "vipl3", label: "VIP L3", bgColor: VIP_BOOTH, left: 30, top: 426, width: 124, height: 87 },
+  { id: "vipl4", label: "VIP L4", bgColor: VIP_BOOTH, left: 30, top: 513, width: 124, height: 87 },
+  { id: "vipl5", label: "VIP L5", bgColor: VIP_BOOTH, left: 30, top: 600, width: 124, height: 87 },
+  { id: "vipl6", label: "VIP L6", bgColor: VIP_BOOTH, left: 30, top: 687, width: 124, height: 87 },
+  { id: "vipl7", label: "VIP L7", bgColor: VIP_BOOTH, left: 30, top: 774, width: 124, height: 87 },
 
   // ── VIP RIGHT — 6 sections × 102 px = 612 px total (y 237–849) ──
   { id: "vipr1", label: "VIP R1", bgColor: VIP_BOOTH, left: 590, top: 237, width: 124, height: 102 },
