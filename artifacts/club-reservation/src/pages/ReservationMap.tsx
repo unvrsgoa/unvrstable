@@ -445,7 +445,7 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
                       }}
                     >
                       <span
-                        className="text-white font-bold leading-tight text-center drop-shadow"
+                        className="text-white font-bold leading-tight text-center drop-shadow opacity-0"
                         style={{ fontSize: t.fontSize ?? "min(1.4vw, 10px)", lineHeight: 1.2, padding: "1px 2px" }}
                       >
                         {t.label.split("\n").map((line, i) => (
