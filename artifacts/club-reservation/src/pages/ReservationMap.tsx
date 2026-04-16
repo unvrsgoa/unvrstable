@@ -52,9 +52,9 @@ const LAYOUT: TableDef[] = [
   { id: "gold1", label: "GOLD 1",      bgColor: GOLD,     left:  60, top: 184, width: 82, height: 55 },
   { id: "gold2", label: "GOLD 2",      bgColor: GOLD,     left: 147, top: 184, width: 82, height: 55 },
   { id: "gold3", label: "GOLD\nVIP 3", bgColor: VIP_GOLD, left: 234, top: 184, width: 82, height: 55 },
-  { id: "gold4", label: "GOLD\nVIP 4", bgColor: VIP_GOLD, left: 452, top: 174, width: 82, height: 55 },
-  { id: "gold5", label: "GOLD 5",      bgColor: GOLD,     left: 539, top: 174, width: 82, height: 55 },
-  { id: "gold6", label: "GOLD 6",      bgColor: GOLD,     left: 626, top: 174, width: 82, height: 55 },
+  { id: "gold4", label: "GOLD\nVIP 4", bgColor: VIP_GOLD, left: 452, top: 184, width: 82, height: 55 },
+  { id: "gold5", label: "GOLD 5",      bgColor: GOLD,     left: 539, top: 184, width: 82, height: 55 },
+  { id: "gold6", label: "GOLD 6",      bgColor: GOLD,     left: 626, top: 184, width: 82, height: 55 },
 
   // ── VIP LEFT — 7 sections × 87 px = 609 px total (y 252–846) ──
   { id: "vipl1", label: "VIP L1", bgColor: VIP_BOOTH, left: 30, top: 252, width: 124, height: 87 },
