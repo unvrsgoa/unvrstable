@@ -89,13 +89,13 @@ const LAYOUT: TableDef[] = [
 
   // ── F-TABLES RIGHT (mirror) ──
   { id: "f14", label: "F14", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 434, top: 263, width: 40, height: 40 },
-  { id: "f15", label: "F15", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 496, top: 270, width: 40, height: 40 },
-  { id: "f16", label: "F16", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 496, top: 331, width: 40, height: 40 },
-  { id: "f17", label: "F17", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 496, top: 398, width: 40, height: 40 },
+  { id: "f15", label: "F15", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 496, top: 263, width: 40, height: 40 },
+  { id: "f16", label: "F16", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 496, top: 324, width: 40, height: 40 },
+  { id: "f17", label: "F17", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 496, top: 391, width: 40, height: 40 },
   { id: "f20", label: "F20", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 543, top: 368, width: 40, height: 40 },
-  { id: "f18", label: "F18", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 496, top: 472, width: 40, height: 40 },
+  { id: "f18", label: "F18", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 496, top: 465, width: 40, height: 40 },
   { id: "f21", label: "F21", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 543, top: 442, width: 40, height: 40 },
-  { id: "f19", label: "F19", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 496, top: 545, width: 40, height: 40 },
+  { id: "f19", label: "F19", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 496, top: 538, width: 40, height: 40 },
   { id: "f22", label: "F22", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 543, top: 515, width: 40, height: 40 },
   { id: "f23", label: "F23", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 543, top: 597, width: 40, height: 40 },
   { id: "f24", label: "F24", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 543, top: 672, width: 40, height: 40 },
