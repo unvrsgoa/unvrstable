@@ -74,7 +74,7 @@ const LAYOUT: TableDef[] = [
   { id: "vipr6", label: "VIP R6", bgColor: VIP_BOOTH, left: 605, top: 687, width: 124, height: 87 },
 
   // ── F-TABLES LEFT ──
-  { id: "f7",  label: "F7",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 238, top: 263, width: 40, height: 40 },
+  { id: "f7",  label: "F7",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 245, top: 263, width: 40, height: 40 },
   { id: "f12", label: "F12", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 255, top: 240, width: 40, height: 40 },
   { id: "f8",  label: "F8",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 245, top: 324, width: 40, height: 40 },
   { id: "f6",  label: "F6",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 173, top: 368, width: 40, height: 40 },
