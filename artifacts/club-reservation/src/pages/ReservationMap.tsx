@@ -463,7 +463,7 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
                       className="absolute w-full text-center font-bold"
                       style={{
                         ...(t.id.startsWith("vipl")
-                          ? { bottom: "calc(100% + 14px)", top: "auto" }
+                          ? { bottom: "calc(100% + 28px)", top: "auto" }
                           : { top: "calc(100% + 2px)" }),
                         fontSize: "min(1.1vw, 8.5px)",
                         lineHeight: 1.3,
