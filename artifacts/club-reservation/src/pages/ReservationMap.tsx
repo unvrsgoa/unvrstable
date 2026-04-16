@@ -461,7 +461,7 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
                           alt="Sold Out"
                           className="absolute object-contain pointer-events-none"
                           style={t.id.startsWith("f") ? {
-                            width: "160%", height: "160%",
+                            width: "220%", height: "220%",
                             top: "50%", left: "50%",
                             transform: "translate(-50%, -50%)",
                           } : {
