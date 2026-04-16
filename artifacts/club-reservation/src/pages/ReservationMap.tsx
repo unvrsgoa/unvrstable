@@ -119,8 +119,8 @@ const LAYOUT: TableDef[] = [
   { id: "d7",  label: "D7",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 517, top: 807, width: 38, height: 38 },
   { id: "d8",  label: "D8",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 560, top: 807, width: 38, height: 38 },
   // D9 & D10 — lower-right pocket
-  { id: "d9",  label: "D9",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 498, top: 876, width: 38, height: 38 },
-  { id: "d10", label: "D10", bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 542, top: 876, width: 38, height: 38 },
+  { id: "d9",  label: "D9",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 518, top: 876, width: 38, height: 38 },
+  { id: "d10", label: "D10", bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 562, top: 876, width: 38, height: 38 },
 
   // ── ROYAL DIAMOND 1 ──
   { id: "rd1", label: "ROYAL\nDIAMOND 1", bgColor: "#8B6914", left: 262, top: 962, width: 172, height: 58 },
