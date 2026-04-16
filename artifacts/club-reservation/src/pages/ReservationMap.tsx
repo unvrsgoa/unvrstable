@@ -475,10 +475,12 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
                             : t.id.startsWith("f")
                             ? { top: "calc(100% + 2px)" }
                             : { top: "calc(100% + 2px)" }),
-                          fontSize: "min(1.1vw, 8.5px)",
+                          fontSize: "min(1.6vw, 11px)",
                           lineHeight: 1.3,
-                          color: "#fff",
-                          textShadow: "0 1px 3px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.8)",
+                          color: "#FFD700",
+                          fontWeight: 900,
+                          textShadow: "0 0 4px #000, 0 0 4px #000, 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000",
+                          letterSpacing: "0.02em",
                         }}
                       >
                         {priceLines.map((line, i) => <div key={i}>{line}</div>)}
