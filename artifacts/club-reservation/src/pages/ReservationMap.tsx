@@ -49,9 +49,9 @@ const LAYOUT: TableDef[] = [
   { id: "platinum2", label: "PLATINUM 2", bgColor: PLATINUM, left: 516, top: 96,  width: 116, height: 62 },
 
   // ── GOLD row — 3 left + 3 right ──
-  { id: "gold1", label: "GOLD 1",      bgColor: GOLD,     left:  50, top: 174, width: 82, height: 55 },
-  { id: "gold2", label: "GOLD 2",      bgColor: GOLD,     left: 137, top: 174, width: 82, height: 55 },
-  { id: "gold3", label: "GOLD\nVIP 3", bgColor: VIP_GOLD, left: 224, top: 174, width: 82, height: 55 },
+  { id: "gold1", label: "GOLD 1",      bgColor: GOLD,     left:  70, top: 174, width: 82, height: 55 },
+  { id: "gold2", label: "GOLD 2",      bgColor: GOLD,     left: 157, top: 174, width: 82, height: 55 },
+  { id: "gold3", label: "GOLD\nVIP 3", bgColor: VIP_GOLD, left: 244, top: 174, width: 82, height: 55 },
   { id: "gold4", label: "GOLD\nVIP 4", bgColor: VIP_GOLD, left: 452, top: 174, width: 82, height: 55 },
   { id: "gold5", label: "GOLD 5",      bgColor: GOLD,     left: 539, top: 174, width: 82, height: 55 },
   { id: "gold6", label: "GOLD 6",      bgColor: GOLD,     left: 626, top: 174, width: 82, height: 55 },
