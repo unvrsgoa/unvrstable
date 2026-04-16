@@ -459,8 +459,14 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
                         <img
                           src={soldOutImg}
                           alt="Sold Out"
-                          className="absolute inset-0 w-full h-full object-contain pointer-events-none"
-                          style={{ padding: "2px" }}
+                          className="absolute object-contain pointer-events-none"
+                          style={t.id.startsWith("f") ? {
+                            width: "160%", height: "160%",
+                            top: "50%", left: "50%",
+                            transform: "translate(-50%, -50%)",
+                          } : {
+                            inset: 0, width: "100%", height: "100%", padding: "2px",
+                          }}
                         />
                       )}
                     </div>
