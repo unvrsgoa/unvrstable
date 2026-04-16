@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import BookingModal, { type Booking } from "./BookingModal";
 import venueImage from "@assets/Untitled_design_(13)_1776296499316.png";
-import soldOutImg from "@assets/Untitled_1776301541315.png";
+import soldOutImg from "@assets/Untitled_(1)_1776301600692.png";
 
 type EventKey = "chetas" | "normal";
 
