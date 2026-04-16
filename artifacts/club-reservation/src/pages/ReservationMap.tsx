@@ -110,14 +110,14 @@ const LAYOUT: TableDef[] = [
   { id: "s6", label: "S6", bgColor: S_TABLE, fontSize: "min(1.2vw,9px)", left: 414, top: 568, width: 42, height: 40 },
 
   // ── D-TABLES — row of 8 across the bottom ──
-  { id: "d1",  label: "D1",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 267, top: 815, width: 38, height: 38 },
-  { id: "d2",  label: "D2",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 310, top: 815, width: 38, height: 38 },
-  { id: "d3",  label: "D3",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 353, top: 815, width: 38, height: 38 },
-  { id: "d4",  label: "D4",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 396, top: 815, width: 38, height: 38 },
-  { id: "d5",  label: "D5",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 439, top: 815, width: 38, height: 38 },
-  { id: "d6",  label: "D6",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 482, top: 815, width: 38, height: 38 },
-  { id: "d7",  label: "D7",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 525, top: 815, width: 38, height: 38 },
-  { id: "d8",  label: "D8",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 568, top: 815, width: 38, height: 38 },
+  { id: "d1",  label: "D1",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 267, top: 807, width: 38, height: 38 },
+  { id: "d2",  label: "D2",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 313, top: 807, width: 38, height: 38 },
+  { id: "d3",  label: "D3",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 359, top: 807, width: 38, height: 38 },
+  { id: "d4",  label: "D4",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 405, top: 807, width: 38, height: 38 },
+  { id: "d5",  label: "D5",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 451, top: 807, width: 38, height: 38 },
+  { id: "d6",  label: "D6",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 497, top: 807, width: 38, height: 38 },
+  { id: "d7",  label: "D7",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 543, top: 807, width: 38, height: 38 },
+  { id: "d8",  label: "D8",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 589, top: 807, width: 38, height: 38 },
   // D9 & D10 — lower-right pocket
   { id: "d9",  label: "D9",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 498, top: 926, width: 38, height: 38 },
   { id: "d10", label: "D10", bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 542, top: 926, width: 38, height: 38 },
