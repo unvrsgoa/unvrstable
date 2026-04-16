@@ -464,24 +464,26 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
                         />
                       )}
                     </div>
-                    <div
-                      className="absolute w-full text-center font-bold"
-                      style={{
-                        ...(t.id.startsWith("vipl")
-                          ? { top: "50%", transform: "translateY(-50%)" }
-                          : t.id.startsWith("vipr")
-                          ? { top: "50%", transform: "translateY(-50%)" }
-                          : t.id.startsWith("f")
-                          ? { top: "calc(100% + 2px)" }
-                          : { top: "calc(100% + 2px)" }),
-                        fontSize: "min(1.1vw, 8.5px)",
-                        lineHeight: 1.3,
-                        color: "#fff",
-                        textShadow: "0 1px 3px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.8)",
-                      }}
-                    >
-                      {priceLines.map((line, i) => <div key={i}>{line}</div>)}
-                    </div>
+                    {!isSold && (
+                      <div
+                        className="absolute w-full text-center font-bold"
+                        style={{
+                          ...(t.id.startsWith("vipl")
+                            ? { top: "50%", transform: "translateY(-50%)" }
+                            : t.id.startsWith("vipr")
+                            ? { top: "50%", transform: "translateY(-50%)" }
+                            : t.id.startsWith("f")
+                            ? { top: "calc(100% + 2px)" }
+                            : { top: "calc(100% + 2px)" }),
+                          fontSize: "min(1.1vw, 8.5px)",
+                          lineHeight: 1.3,
+                          color: "#fff",
+                          textShadow: "0 1px 3px rgba(0,0,0,0.9), 0 0 6px rgba(0,0,0,0.8)",
+                        }}
+                      >
+                        {priceLines.map((line, i) => <div key={i}>{line}</div>)}
+                      </div>
+                    )}
                   </div>
                 );
               })}
