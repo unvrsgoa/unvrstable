@@ -440,7 +440,7 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
                     <div
                       className="absolute inset-0 rounded-md flex flex-col items-center justify-center transition-all"
                       style={{
-                        backgroundColor: isSold ? "rgba(107,114,128,0.88)" : t.bgColor === "transparent" ? "transparent" : t.bgColor + "dd",
+                        backgroundColor: "transparent",
                         boxShadow: isSel ? "0 0 0 3px #fbbf24" : "none",
                         backdropFilter: "none",
                       }}
