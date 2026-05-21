@@ -6,6 +6,7 @@ import ReservationMap from "@/pages/ReservationMap";
 import Dashboard from "@/pages/Dashboard";
 import QRScanner from "@/pages/QRScanner";
 import LoginPage from "@/pages/LoginPage";
+import PublicMapView from "@/pages/PublicMapView";
 
 const queryClient = new QueryClient();
 type Page = "map" | "dashboard" | "scan";
@@ -19,6 +20,8 @@ function isSessionValid() {
   if (!expiry) return false;
   return Date.now() < parseInt(expiry, 10);
 }
+
+const isPublicView = new URLSearchParams(window.location.search).has("public");
 
 function App() {
   const [authed, setAuthed] = useState(() => isSessionValid());
@@ -113,6 +116,17 @@ function App() {
     : role === "operator"
     ? "bg-blue-100 text-blue-700 border-blue-300"
     : "bg-gray-100 text-gray-600 border-gray-300";
+
+  if (isPublicView) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <PublicMapView />
+          <Toaster />
+        </TooltipProvider>
+      </QueryClientProvider>
+    );
+  }
 
   if (!authed) {
     return (
