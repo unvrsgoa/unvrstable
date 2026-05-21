@@ -85,7 +85,7 @@ export default function PublicMapView() {
       if (!res.ok) return;
       const data: { id: string; status: string; price: string }[] = await res.json();
       const map: Record<string, { status: string; price: string }> = {};
-      data.forEach((t) => { map[t.id] = { status: t.status, price: t.price }; });
+      data.forEach((t) => { map[t.id] = { status: t.status, price: t.price ?? "" }; });
       setTableData(map);
       setLastUpdated(new Date());
     } catch {}
@@ -137,7 +137,7 @@ export default function PublicMapView() {
             />
             <div className="absolute inset-0" style={{ zIndex: 1 }}>
               {LAYOUT.map((t) => {
-                const row = tableData[`${event}_${t.id}`];
+                const row = tableData[t.id];
                 const isSold = row?.status === "sold_out";
                 const price = row?.price ?? "";
                 const priceLines = price.split("\n");
@@ -189,19 +189,40 @@ export default function PublicMapView() {
         </div>
       </div>
 
-      <div className="mt-4 flex items-center gap-4 flex-wrap justify-center">
-        <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-full bg-green-400"></div>
-          <span className="text-xs text-gray-400">Available</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-full bg-red-500"></div>
-          <span className="text-xs text-gray-400">Sold Out</span>
-        </div>
-        <span className="text-xs text-gray-600">
-          Updated: {lastUpdated.toLocaleTimeString()} · auto-refreshes every 30s
-        </span>
-      </div>
+      {(() => {
+        const total = LAYOUT.length;
+        const soldCount = LAYOUT.filter((t) => tableData[t.id]?.status === "sold_out").length;
+        const availCount = total - soldCount;
+        return (
+          <div className="mt-4 w-full max-w-sm">
+            <div className="bg-gray-800 rounded-2xl px-5 py-4 flex flex-col gap-3">
+              <div className="flex justify-between items-center border-b border-gray-700 pb-2">
+                <span className="text-gray-300 text-sm font-semibold tracking-wide">Table Status</span>
+                <span className="text-gray-500 text-xs">{total} total tables</span>
+              </div>
+              <div className="flex gap-4">
+                <div className="flex-1 bg-green-900/40 rounded-xl px-3 py-3 text-center">
+                  <div className="text-2xl font-black text-green-400">{availCount}</div>
+                  <div className="text-xs text-green-500 mt-0.5 font-semibold uppercase tracking-wide">Available</div>
+                </div>
+                <div className="flex-1 bg-red-900/40 rounded-xl px-3 py-3 text-center">
+                  <div className="text-2xl font-black text-red-400">{soldCount}</div>
+                  <div className="text-xs text-red-500 mt-0.5 font-semibold uppercase tracking-wide">Sold Out</div>
+                </div>
+              </div>
+              <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
+                <div
+                  className="h-2 rounded-full bg-gradient-to-r from-red-500 to-red-400 transition-all duration-700"
+                  style={{ width: total > 0 ? `${(soldCount / total) * 100}%` : "0%" }}
+                />
+              </div>
+              <p className="text-center text-gray-500 text-xs">
+                Updated: {lastUpdated.toLocaleTimeString()} · auto-refreshes every 30s
+              </p>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
