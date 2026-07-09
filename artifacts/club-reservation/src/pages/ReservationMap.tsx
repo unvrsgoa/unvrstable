@@ -122,7 +122,7 @@ const LAYOUT: TableDef[] = [
   { id: "d5",  label: "D5",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 376, top: 807, width: 38, height: 38 },
   { id: "d6",  label: "D6",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 439, top: 807, width: 38, height: 38 },
   { id: "d7",  label: "D7",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 497, top: 807, width: 38, height: 38 },
-  { id: "d8",  label: "D8",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 560, top: 807, width: 38, height: 38 },
+  { id: "d8",  label: "D8",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 550, top: 807, width: 38, height: 38 },
   // D9 & D10 — lower-right pocket
   { id: "d9",  label: "D9",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 518, top: 866, width: 38, height: 38 },
   { id: "d10", label: "D10", bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 562, top: 866, width: 38, height: 38 },
