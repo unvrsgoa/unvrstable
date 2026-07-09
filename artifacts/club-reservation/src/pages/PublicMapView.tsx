@@ -148,7 +148,7 @@ export default function PublicMapView() {
                     className="absolute"
                     style={{ top: pct(t.top, H), left: pct(t.left, W), width: pct(t.width, W), height: pct(t.height, H) }}
                   >
-                    <div className="absolute inset-0 rounded-md" style={{ backgroundColor: "transparent" }}>
+                    <div className="absolute inset-0 rounded-md" style={{ backgroundColor: "rgba(251, 191, 36, 0.25)" }}>
                       {isSold && (
                         <img
                           src={soldOutImg}
