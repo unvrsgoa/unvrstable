@@ -77,8 +77,8 @@ const LAYOUT: TableDef[] = [
   // ── F-TABLES LEFT ──
   { id: "f7",  label: "F7",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 235, top: 268, width: 40, height: 40 },
   { id: "f12", label: "F12", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 287, top: 263, width: 40, height: 40 },
-  { id: "f12a", label: "F12\nA", bgColor: F_TABLE, fontSize: "min(1.1vw,8px)", left: 340, top: 310, width: 38, height: 38 },
-  { id: "f12b", label: "F12\nB", bgColor: F_TABLE, fontSize: "min(1.1vw,8px)", left: 340, top: 368, width: 38, height: 38 },
+  { id: "f12a", label: "F12\nA", bgColor: F_TABLE, fontSize: "min(1.1vw,8px)", left: 325, top: 310, width: 38, height: 38 },
+  { id: "f12b", label: "F12\nB", bgColor: F_TABLE, fontSize: "min(1.1vw,8px)", left: 325, top: 368, width: 38, height: 38 },
   { id: "f14a", label: "F14\nA", bgColor: F_TABLE, fontSize: "min(1.1vw,8px)", left: 340, top: 430, width: 38, height: 38 },
   { id: "f14b", label: "F14\nB", bgColor: F_TABLE, fontSize: "min(1.1vw,8px)", left: 340, top: 488, width: 38, height: 38 },
   { id: "f8",  label: "F8",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 235, top: 329, width: 40, height: 40 },
