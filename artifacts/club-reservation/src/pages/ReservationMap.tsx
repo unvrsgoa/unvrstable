@@ -117,7 +117,7 @@ const LAYOUT: TableDef[] = [
   // ── D-TABLES — row of 8 across the bottom ──
   { id: "d1",  label: "D1",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 129, top: 897, width: 38, height: 38 },
   { id: "d2",  label: "D2",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 202, top: 897, width: 38, height: 38 },
-  { id: "d3",  label: "D3",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 345, top: 807, width: 38, height: 38 },
+  { id: "d3",  label: "D3",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 265, top: 807, width: 38, height: 38 },
   { id: "d4",  label: "D4",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 388, top: 807, width: 38, height: 38 },
   { id: "d5",  label: "D5",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 431, top: 807, width: 38, height: 38 },
   { id: "d6",  label: "D6",  bgColor: D_TABLE, fontSize: "min(1.2vw,9px)", left: 474, top: 807, width: 38, height: 38 },
