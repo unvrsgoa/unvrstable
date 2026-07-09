@@ -71,7 +71,7 @@ const LAYOUT = [
   { id: "d8",  left: 560, top: 807, width: 38, height: 38 },
   { id: "d9",  left: 518, top: 866, width: 38, height: 38 },
   { id: "d10", left: 562, top: 866, width: 38, height: 38 },
-  { id: "rd1", left: 290, top: 892, width: 110, height: 95 },
+  { id: "rd1", left: 282, top: 892, width: 110, height: 95 },
 ];
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
