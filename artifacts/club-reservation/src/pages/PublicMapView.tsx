@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import venueImage from "@assets/ChatGPT_Image_Apr_23,_2026,_12_37_32_AM_1776884968656.png";
+import venueImage from "@assets/cewcw_1783598948856.png";
 import soldOutImg from "@assets/Untitled_(1)_1776301600692.png";
 
 const W = 750, H = 1024;
