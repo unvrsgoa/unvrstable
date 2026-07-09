@@ -29,8 +29,8 @@ const LAYOUT = [
   { id: "vipr6",     left: 605, top: 687, width: 124, height: 87 },
   { id: "f7",  left: 235, top: 268, width: 40, height: 40 },
   { id: "f12", left: 287, top: 263, width: 40, height: 40 },
-  { id: "f12a", left: 315, top: 300, width: 38, height: 38 },
-  { id: "f12b", left: 315, top: 358, width: 38, height: 38 },
+  { id: "f12a", left: 345, top: 260, width: 38, height: 38 },
+  { id: "f12b", left: 345, top: 318, width: 38, height: 38 },
   { id: "f14a", left: 420, top: 390, width: 38, height: 38 },
   { id: "f14b", left: 420, top: 448, width: 38, height: 38 },
   { id: "f8",  left: 235, top: 329, width: 40, height: 40 },
@@ -152,7 +152,7 @@ export default function PublicMapView() {
                     className="absolute"
                     style={{ top: pct(t.top, H), left: pct(t.left, W), width: pct(t.width, W), height: pct(t.height, H) }}
                   >
-                    <div className="absolute inset-0 rounded-md" style={{ backgroundColor: "rgba(251, 191, 36, 0.25)" }}>
+                    <div className="absolute inset-0 rounded-md" style={{ backgroundColor: "transparent" }}>
                       {isSold && (
                         <img
                           src={soldOutImg}

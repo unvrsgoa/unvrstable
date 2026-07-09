@@ -77,8 +77,8 @@ const LAYOUT: TableDef[] = [
   // ── F-TABLES LEFT ──
   { id: "f7",  label: "F7",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 235, top: 268, width: 40, height: 40 },
   { id: "f12", label: "F12", bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 287, top: 263, width: 40, height: 40 },
-  { id: "f12a", label: "F12\nA", bgColor: F_TABLE, fontSize: "min(1.1vw,8px)", left: 315, top: 300, width: 38, height: 38 },
-  { id: "f12b", label: "F12\nB", bgColor: F_TABLE, fontSize: "min(1.1vw,8px)", left: 315, top: 358, width: 38, height: 38 },
+  { id: "f12a", label: "F12\nA", bgColor: F_TABLE, fontSize: "min(1.1vw,8px)", left: 345, top: 260, width: 38, height: 38 },
+  { id: "f12b", label: "F12\nB", bgColor: F_TABLE, fontSize: "min(1.1vw,8px)", left: 345, top: 318, width: 38, height: 38 },
   { id: "f14a", label: "F14\nA", bgColor: F_TABLE, fontSize: "min(1.1vw,8px)", left: 420, top: 390, width: 38, height: 38 },
   { id: "f14b", label: "F14\nB", bgColor: F_TABLE, fontSize: "min(1.1vw,8px)", left: 420, top: 448, width: 38, height: 38 },
   { id: "f8",  label: "F8",  bgColor: F_TABLE, fontSize: "min(1.2vw,9px)", left: 235, top: 329, width: 40, height: 40 },
@@ -444,7 +444,7 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
                     <div
                       className="absolute inset-0 rounded-md flex flex-col items-center justify-center transition-all"
                       style={{
-                        backgroundColor: "rgba(251, 191, 36, 0.35)",
+                        backgroundColor: "transparent",
                         boxShadow: isSel ? "0 0 8px 3px rgba(251,191,36,0.5)" : "none",
                         backdropFilter: "none",
                         outline: "none",
