@@ -64,7 +64,7 @@ const LAYOUT = [
   { id: "d1",  left: 129, top: 897, width: 38, height: 38 },
   { id: "d2",  left: 202, top: 897, width: 38, height: 38 },
   { id: "d3",  left: 255, top: 807, width: 38, height: 38 },
-  { id: "d4",  left: 328, top: 807, width: 38, height: 38 },
+  { id: "d4",  left: 318, top: 807, width: 38, height: 38 },
   { id: "d5",  left: 431, top: 807, width: 38, height: 38 },
   { id: "d6",  left: 474, top: 807, width: 38, height: 38 },
   { id: "d7",  left: 517, top: 807, width: 38, height: 38 },
