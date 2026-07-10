@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import venueImage from "@assets/cewcw_1783598948856.png";
-import soldOutImg from "@assets/Untitled_(1)_1776301600692.png";
 
 const W = 750, H = 1024;
 function pct(val: number, total: number) { return `${((val / total) * 100).toFixed(3)}%`; }
@@ -158,20 +157,6 @@ export default function PublicMapView() {
                         backgroundColor: "transparent",
                       }}
                     >
-                      {isSold && (
-                        <img
-                          src={soldOutImg}
-                          alt="Sold Out"
-                          className="absolute object-contain pointer-events-none"
-                          style={t.id.startsWith("f") ? {
-                            width: "350%", height: "350%",
-                            top: "50%", left: "50%",
-                            transform: "translate(-50%, -50%)",
-                          } : {
-                            inset: 0, width: "100%", height: "100%", padding: "2px",
-                          }}
-                        />
-                      )}
                     </div>
                     {!isSold && price && (
                       <div
