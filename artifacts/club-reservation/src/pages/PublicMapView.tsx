@@ -156,8 +156,6 @@ export default function PublicMapView() {
                       className="absolute inset-0 rounded-md"
                       style={{
                         backgroundColor: "transparent",
-                        boxShadow: isSold ? "0 0 14px 5px rgba(220, 38, 38, 0.7)" : "none",
-                        border: isSold ? "2px solid rgba(220, 38, 38, 0.95)" : "none",
                       }}
                     >
                       {isSold && (
