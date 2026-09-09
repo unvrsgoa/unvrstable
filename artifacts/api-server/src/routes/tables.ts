@@ -75,10 +75,10 @@ const BASE_TABLES: Array<{ id: string; status: string; price: string }> = [
   { id: "rd1", status: "available", price: "Royal Diamond\n1 LAC" },
 ];
 
-const EVENTS = ["chetas", "normal"] as const;
+const LEGACY_EVENTS = ["chetas", "normal"] as const;
 
 async function seedAllEvents() {
-  const rows = EVENTS.flatMap((event) =>
+  const rows = LEGACY_EVENTS.flatMap((event) =>
     BASE_TABLES.map((t) => ({ id: `${event}_${t.id}`, status: t.status, price: t.price }))
   );
   await db.insert(clubTablesTable).values(rows).onConflictDoNothing();
@@ -86,10 +86,20 @@ async function seedAllEvents() {
 
 seedAllEvents().catch(console.error);
 
+function todayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+async function ensureDateTables(date: string) {
+  const rows = BASE_TABLES.map((t) => ({ id: `${date}_${t.id}`, status: t.status, price: t.price }));
+  await db.insert(clubTablesTable).values(rows).onConflictDoNothing();
+}
+
 router.get("/tables", async (req, res) => {
-  const event = (req.query.event as string) || "chetas";
-  const prefix = `${event}_`;
+  const date = (req.query.date as string) || (req.query.event as string) || todayKey();
+  const prefix = `${date}_`;
   try {
+    await ensureDateTables(date);
     const rows = await db
       .select()
       .from(clubTablesTable)
@@ -103,8 +113,8 @@ router.get("/tables", async (req, res) => {
 });
 
 router.patch("/tables/:id", async (req, res) => {
-  const event = (req.query.event as string) || "chetas";
-  const dbId = `${event}_${req.params.id}`;
+  const date = (req.query.date as string) || (req.query.event as string) || todayKey();
+  const dbId = `${date}_${req.params.id}`;
   const { status, price } = req.body as { status?: string; price?: string };
 
   if (!status && !price) {
@@ -117,6 +127,7 @@ router.patch("/tables/:id", async (req, res) => {
   if (price !== undefined) updates.price = price;
 
   try {
+    await ensureDateTables(date);
     const [updated] = await db
       .update(clubTablesTable)
       .set(updates)

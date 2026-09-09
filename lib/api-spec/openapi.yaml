@@ -30,6 +30,14 @@ paths:
       operationId: getTables
       tags: [tables]
       summary: Get all tables
+      parameters:
+        - name: date
+          in: query
+          required: false
+          description: Reservation date in YYYY-MM-DD format
+          schema:
+            type: string
+            format: date
       responses:
         "200":
           description: List of tables
@@ -51,6 +59,13 @@ paths:
           required: true
           schema:
             type: string
+        - name: date
+          in: query
+          required: false
+          description: Reservation date in YYYY-MM-DD format
+          schema:
+            type: string
+            format: date
       requestBody:
         required: true
         content:
