@@ -10,7 +10,6 @@ import PublicMapView from "@/pages/PublicMapView";
 
 const queryClient = new QueryClient();
 type Page = "map" | "dashboard" | "scan";
-type EventKey = "chetas" | "normal";
 export type Role = "admin" | "operator" | "viewer";
 
 const SESSION_DURATION = 5 * 60 * 1000;
@@ -27,35 +26,8 @@ function App() {
   const [authed, setAuthed] = useState(() => isSessionValid());
   const [role, setRole] = useState<Role>(() => (sessionStorage.getItem("tlc_role") as Role) || "viewer");
   const [page, setPage] = useState<Page>("map");
-  const [event, setEvent] = useState<EventKey>("chetas");
+  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [remaining, setRemaining] = useState(0);
-
-  // Feature 1: Custom name for the "normal" event
-  const [normalEventName, setNormalEventName] = useState(
-    () => localStorage.getItem("tlc_normal_name") || "Normal Night"
-  );
-  const [editingName, setEditingName] = useState(false);
-  const [nameInput, setNameInput] = useState("");
-
-  // Feature 2: Active show per event
-  const [currentShowChetas, setCurrentShowChetas] = useState(
-    () => localStorage.getItem("tlc_show_chetas") || "Show 1"
-  );
-  const [currentShowNormal, setCurrentShowNormal] = useState(
-    () => localStorage.getItem("tlc_show_normal") || "Show 1"
-  );
-
-  const currentShow = event === "chetas" ? currentShowChetas : currentShowNormal;
-
-  const setCurrentShow = (show: string) => {
-    if (event === "chetas") {
-      setCurrentShowChetas(show);
-      localStorage.setItem("tlc_show_chetas", show);
-    } else {
-      setCurrentShowNormal(show);
-      localStorage.setItem("tlc_show_normal", show);
-    }
-  };
 
   const logout = useCallback(() => {
     sessionStorage.removeItem("tlc_auth_expiry");
@@ -74,13 +46,6 @@ function App() {
     sessionStorage.setItem("tlc_role", r);
     setRole(r);
     setAuthed(true);
-  };
-
-  const saveNormalName = () => {
-    const trimmed = nameInput.trim() || "Normal Night";
-    setNormalEventName(trimmed);
-    localStorage.setItem("tlc_normal_name", trimmed);
-    setEditingName(false);
   };
 
   useEffect(() => {
@@ -168,54 +133,9 @@ function App() {
 
               <div className="flex items-center gap-2 flex-wrap">
                 {page !== "scan" && (
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => setEvent("chetas")}
-                      className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide transition-all shadow-sm ${
-                        event === "chetas"
-                          ? "bg-indigo-700 text-white"
-                          : "bg-white text-gray-500 border border-gray-300 hover:bg-gray-50"
-                      }`}
-                    >
-                      🎧 Chetas
-                    </button>
-
-                    {/* Normal event button + inline rename (admin only) */}
-                    <div className="flex items-center gap-0.5">
-                      <button
-                        onClick={() => setEvent("normal")}
-                        className={`px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide transition-all shadow-sm ${
-                          event === "normal"
-                            ? "bg-gray-800 text-white"
-                            : "bg-white text-gray-500 border border-gray-300 hover:bg-gray-50"
-                        }`}
-                      >
-                        🎵 {normalEventName}
-                      </button>
-                      {role === "admin" && !editingName && (
-                        <button
-                          onClick={() => { setNameInput(normalEventName); setEditingName(true); }}
-                          className="text-gray-400 hover:text-gray-600 text-xs px-1 transition"
-                          title="Rename"
-                        >✏️</button>
-                      )}
-                    </div>
-
-                    {/* Inline rename input */}
-                    {editingName && (
-                      <div className="flex items-center gap-1 ml-1">
-                        <input
-                          autoFocus
-                          value={nameInput}
-                          onChange={(e) => setNameInput(e.target.value)}
-                          onKeyDown={(e) => { if (e.key === "Enter") saveNormalName(); if (e.key === "Escape") setEditingName(false); }}
-                          className="border rounded-md px-2 py-1 text-xs w-32 focus:outline-none focus:ring-1 focus:ring-indigo-400"
-                          placeholder="Event name"
-                        />
-                        <button onClick={saveNormalName} className="text-xs bg-indigo-600 text-white px-2 py-1 rounded-md font-bold hover:bg-indigo-700">✓</button>
-                        <button onClick={() => setEditingName(false)} className="text-xs text-gray-500 hover:text-gray-700 px-1">✕</button>
-                      </div>
-                    )}
+                  <div className="hidden sm:block text-right">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-indigo-500">Booking date</p>
+                    <p className="text-sm font-extrabold text-gray-800">{selectedDate}</p>
                   </div>
                 )}
 
@@ -243,20 +163,16 @@ function App() {
           <div>
             {page === "map" && (
               <ReservationMap
-                event={event}
-                onEventChange={setEvent}
+                selectedDate={selectedDate}
+                onDateChange={setSelectedDate}
                 role={role}
-                currentShow={currentShow}
-                normalEventName={normalEventName}
               />
             )}
             {page === "dashboard" && (
               <Dashboard
-                event={event}
+                selectedDate={selectedDate}
+                onDateChange={setSelectedDate}
                 role={role}
-                currentShow={currentShow}
-                onShowChange={setCurrentShow}
-                normalEventName={normalEventName}
               />
             )}
             {page === "scan" && <QRScanner />}

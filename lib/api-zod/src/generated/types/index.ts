@@ -8,5 +8,7 @@
 
 export * from "./clubTable";
 export * from "./errorResponse";
+export * from "./getTablesParams";
 export * from "./healthStatus";
 export * from "./updateTable";
+export * from "./updateTableParams";

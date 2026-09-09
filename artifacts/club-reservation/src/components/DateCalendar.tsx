@@ -44,7 +44,7 @@ export default function DateCalendar({ value, onChange, compact = false }: DateC
     const firstDay = month.getDay();
     const totalDays = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
     const previousMonthDays = new Date(month.getFullYear(), month.getMonth(), 0).getDate();
-    const cells: (Date | null)[] = [];
+    const cells: Date[] = [];
 
     for (let i = firstDay - 1; i >= 0; i -= 1) {
       cells.push(new Date(month.getFullYear(), month.getMonth() - 1, previousMonthDays - i));

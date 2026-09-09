@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import DateCalendar from "@/components/DateCalendar";
 import venueImage from "@assets/cewcw_1783598948856.png";
 import soldOutImg from "@assets/Untitled_(1)_1776301600692.png";
 
@@ -76,16 +77,14 @@ const LAYOUT = [
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
-type EventKey = "chetas" | "normal";
-
 export default function PublicMapView() {
-  const [event, setEvent] = useState<EventKey>("chetas");
+  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [tableData, setTableData] = useState<Record<string, { status: string; price: string }>>({});
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
 
-  const load = async (ev: EventKey) => {
+  const load = async (date: string) => {
     try {
-      const res = await fetch(`${BASE}/api/tables?event=${ev}`);
+      const res = await fetch(`${BASE}/api/tables?date=${date}`);
       if (!res.ok) return;
       const data: { id: string; status: string; price: string }[] = await res.json();
       const map: Record<string, { status: string; price: string }> = {};
@@ -95,38 +94,21 @@ export default function PublicMapView() {
     } catch {}
   };
 
-  useEffect(() => { load(event); }, [event]);
+  useEffect(() => { load(selectedDate); }, [selectedDate]);
   useEffect(() => {
-    const interval = setInterval(() => load(event), 30_000);
+    const interval = setInterval(() => load(selectedDate), 30_000);
     return () => clearInterval(interval);
-  }, [event]);
-
-  const normalEventName = localStorage.getItem("tlc_normal_name") || "Normal Night";
+  }, [selectedDate]);
 
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col items-center py-6 px-2">
       <div className="mb-4 text-center">
         <h1 className="text-2xl font-black text-yellow-400 tracking-widest uppercase">The Leela Club</h1>
-        <p className="text-gray-400 text-xs mt-1">Live Table Availability</p>
+        <p className="text-gray-400 text-xs mt-1">Live table availability by date</p>
       </div>
 
-      <div className="flex gap-2 mb-4">
-        <button
-          onClick={() => setEvent("chetas")}
-          className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide transition-all ${
-            event === "chetas" ? "bg-indigo-600 text-white" : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-          }`}
-        >
-          🎧 DJ Chetas
-        </button>
-        <button
-          onClick={() => setEvent("normal")}
-          className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide transition-all ${
-            event === "normal" ? "bg-gray-200 text-gray-900" : "bg-gray-700 text-gray-300 hover:bg-gray-600"
-          }`}
-        >
-          🎵 {normalEventName}
-        </button>
+      <div className="mb-4 w-full max-w-sm">
+        <DateCalendar value={selectedDate} onChange={setSelectedDate} />
       </div>
 
       <div className="w-full flex justify-center">

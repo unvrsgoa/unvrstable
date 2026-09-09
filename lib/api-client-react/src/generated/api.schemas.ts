@@ -23,3 +23,17 @@ export interface UpdateTable {
 export interface ErrorResponse {
   error: string;
 }
+
+export type GetTablesParams = {
+  /**
+   * Reservation date in YYYY-MM-DD format
+   */
+  date?: string;
+};
+
+export type UpdateTableParams = {
+  /**
+   * Reservation date in YYYY-MM-DD format
+   */
+  date?: string;
+};

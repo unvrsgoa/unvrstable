@@ -19,8 +19,10 @@ import type {
 import type {
   ClubTable,
   ErrorResponse,
+  GetTablesParams,
   HealthStatus,
   UpdateTable,
+  UpdateTableParams,
 } from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
@@ -110,37 +112,57 @@ export function useHealthCheck<
 /**
  * @summary Get all tables
  */
-export const getGetTablesUrl = () => {
-  return `/api/tables`;
+export const getGetTablesUrl = (params?: GetTablesParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/tables?${stringifiedParams}`
+    : `/api/tables`;
 };
 
 export const getTables = async (
+  params?: GetTablesParams,
   options?: RequestInit,
 ): Promise<ClubTable[]> => {
-  return customFetch<ClubTable[]>(getGetTablesUrl(), {
+  return customFetch<ClubTable[]>(getGetTablesUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getGetTablesQueryKey = () => {
-  return [`/api/tables`] as const;
+export const getGetTablesQueryKey = (params?: GetTablesParams) => {
+  return [`/api/tables`, ...(params ? [params] : [])] as const;
 };
 
 export const getGetTablesQueryOptions = <
   TData = Awaited<ReturnType<typeof getTables>>,
   TError = ErrorType<unknown>,
->(options?: {
-  query?: UseQueryOptions<Awaited<ReturnType<typeof getTables>>, TError, TData>;
-  request?: SecondParameter<typeof customFetch>;
-}) => {
+>(
+  params?: GetTablesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getTables>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetTablesQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getGetTablesQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getTables>>> = ({
     signal,
-  }) => getTables({ signal, ...requestOptions });
+  }) => getTables(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getTables>>,
@@ -161,11 +183,18 @@ export type GetTablesQueryError = ErrorType<unknown>;
 export function useGetTables<
   TData = Awaited<ReturnType<typeof getTables>>,
   TError = ErrorType<unknown>,
->(options?: {
-  query?: UseQueryOptions<Awaited<ReturnType<typeof getTables>>, TError, TData>;
-  request?: SecondParameter<typeof customFetch>;
-}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getGetTablesQueryOptions(options);
+>(
+  params?: GetTablesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getTables>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetTablesQueryOptions(params, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
@@ -177,16 +206,29 @@ export function useGetTables<
 /**
  * @summary Update a table's status or price
  */
-export const getUpdateTableUrl = (id: string) => {
-  return `/api/tables/${id}`;
+export const getUpdateTableUrl = (id: string, params?: UpdateTableParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/tables/${id}?${stringifiedParams}`
+    : `/api/tables/${id}`;
 };
 
 export const updateTable = async (
   id: string,
   updateTable: UpdateTable,
+  params?: UpdateTableParams,
   options?: RequestInit,
 ): Promise<ClubTable> => {
-  return customFetch<ClubTable>(getUpdateTableUrl(id), {
+  return customFetch<ClubTable>(getUpdateTableUrl(id, params), {
     ...options,
     method: "PATCH",
     headers: { "Content-Type": "application/json", ...options?.headers },
@@ -201,14 +243,14 @@ export const getUpdateTableMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateTable>>,
     TError,
-    { id: string; data: BodyType<UpdateTable> },
+    { id: string; data: BodyType<UpdateTable>; params?: UpdateTableParams },
     TContext
   >;
   request?: SecondParameter<typeof customFetch>;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof updateTable>>,
   TError,
-  { id: string; data: BodyType<UpdateTable> },
+  { id: string; data: BodyType<UpdateTable>; params?: UpdateTableParams },
   TContext
 > => {
   const mutationKey = ["updateTable"];
@@ -222,11 +264,11 @@ export const getUpdateTableMutationOptions = <
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof updateTable>>,
-    { id: string; data: BodyType<UpdateTable> }
+    { id: string; data: BodyType<UpdateTable>; params?: UpdateTableParams }
   > = (props) => {
-    const { id, data } = props ?? {};
+    const { id, data, params } = props ?? {};
 
-    return updateTable(id, data, requestOptions);
+    return updateTable(id, data, params, requestOptions);
   };
 
   return { mutationFn, ...mutationOptions };
@@ -248,14 +290,14 @@ export const useUpdateTable = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof updateTable>>,
     TError,
-    { id: string; data: BodyType<UpdateTable> },
+    { id: string; data: BodyType<UpdateTable>; params?: UpdateTableParams },
     TContext
   >;
   request?: SecondParameter<typeof customFetch>;
 }): UseMutationResult<
   Awaited<ReturnType<typeof updateTable>>,
   TError,
-  { id: string; data: BodyType<UpdateTable> },
+  { id: string; data: BodyType<UpdateTable>; params?: UpdateTableParams },
   TContext
 > => {
   return useMutation(getUpdateTableMutationOptions(options));

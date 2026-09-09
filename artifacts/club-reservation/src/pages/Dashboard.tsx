@@ -3,6 +3,7 @@ import { QRCodeSVG, QRCodeCanvas } from "qrcode.react";
 import * as XLSX from "xlsx";
 import html2canvas from "html2canvas";
 import BookingModal, { type Booking } from "./BookingModal";
+import DateCalendar from "@/components/DateCalendar";
 import leelaLogo from "@assets/image_1775535190878.png";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
@@ -19,7 +20,8 @@ interface Stats {
 }
 
 interface Props {
-  event: string;
+  selectedDate: string;
+  onDateChange: (date: string) => void;
   role?: string;
   currentShow?: string;
   onShowChange?: (s: string) => void;
@@ -58,12 +60,14 @@ function safeBreakdown(s?: string | null): { mode: string; amount: number }[] {
 function fmt(n: number | null | undefined) { return `₹${(n ?? 0).toLocaleString()}`; }
 
 export default function Dashboard({
-  event,
+  selectedDate,
+  onDateChange,
   role = "admin",
   currentShow = "Show 1",
   onShowChange,
   normalEventName = "Normal Night",
 }: Props) {
+  const event = selectedDate;
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [search, setSearch] = useState("");
@@ -81,7 +85,7 @@ export default function Dashboard({
   const [savingRow, setSavingRow] = useState(false);
 
   const blankRow = (): NewRow => ({
-    guestName: "", tableId: "", bookingDate: new Date().toISOString().slice(0, 10),
+    guestName: "", tableId: "", bookingDate: selectedDate,
     paxCount: "1", contactNo: "", tlcCardNo: "", handBandColor: "",
     totalPrice: "0", advanceAmount: "0", paymentMode: "Cash", ageGroup: "18-25",
   });
@@ -138,8 +142,8 @@ export default function Dashboard({
     try {
       const show = encodeURIComponent(currentShow);
       const [b, s] = await Promise.all([
-        fetch(`${BASE}/api/bookings?event=${event}&show=${show}`).then((r) => r.json()),
-        fetch(`${BASE}/api/bookings/stats?event=${event}&show=${show}`).then((r) => r.json()),
+        fetch(`${BASE}/api/bookings?date=${selectedDate}&show=${show}`).then((r) => r.json()),
+        fetch(`${BASE}/api/bookings/stats?date=${selectedDate}&show=${show}`).then((r) => r.json()),
       ]);
       setBookings(Array.isArray(b) ? b : []);
       setStats(s);
@@ -157,12 +161,12 @@ export default function Dashboard({
   };
 
   const wipeAll = async () => {
-    const eventLabel = event === "chetas" ? "DJ Chetas Night" : normalEventName;
+    const eventLabel = `Bookings for ${selectedDate}`;
     if (!confirm(`⚠️ DANGER: This will permanently delete ALL ${bookings.length} booking(s) for "${eventLabel}" — ${currentShow}.\n\nThis cannot be undone! Continue?`)) return;
     if (!confirm(`Final confirmation: Delete ALL data for ${eventLabel} / ${currentShow}?`)) return;
     setWiping(true);
     try {
-      await fetch(`${BASE}/api/bookings/wipe?event=${event}&show=${encodeURIComponent(currentShow)}`, { method: "DELETE" });
+      await fetch(`${BASE}/api/bookings/wipe?date=${selectedDate}&show=${encodeURIComponent(currentShow)}`, { method: "DELETE" });
       load();
     } finally { setWiping(false); }
   };
@@ -262,11 +266,14 @@ export default function Dashboard({
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="mb-5 max-w-sm">
+        <DateCalendar value={selectedDate} onChange={onDateChange} compact />
+      </div>
       {/* Header row */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
         <div>
           <h2 className="text-2xl font-extrabold text-gray-800">
-            📊 Dashboard — {event === "chetas" ? "DJ Chetas Night" : normalEventName}
+            📊 Dashboard — {selectedDate}
           </h2>
           {/* Feature 2: show selector */}
           <div className="relative mt-1">
@@ -743,6 +750,7 @@ export default function Dashboard({
           tableLabel="ENTRY"
           tablePrice=""
           event={event}
+          defaultBookingDate={selectedDate}
           showLabel={currentShow}
           onClose={() => setShowGeneralEntry(false)}
           onSuccess={() => { setShowGeneralEntry(false); load(); }}
@@ -756,6 +764,7 @@ export default function Dashboard({
           tableLabel="COVER CHARGE"
           tablePrice=""
           event={event}
+          defaultBookingDate={selectedDate}
           showLabel={currentShow}
           onClose={() => setShowCoverCharge(false)}
           onSuccess={() => { setShowCoverCharge(false); load(); }}

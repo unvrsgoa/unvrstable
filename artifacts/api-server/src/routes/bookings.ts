@@ -18,6 +18,13 @@ function buildShowFilter(show: string | undefined) {
   return eq(bookingsTable.showLabel, show);
 }
 
+function buildBookingFilter(event: string, show: string | undefined, date: string | undefined) {
+  const filters = [date ? eq(bookingsTable.bookingDate, date) : eq(bookingsTable.event, event)];
+  const showFilter = buildShowFilter(show);
+  if (showFilter) filters.push(showFilter);
+  return and(...filters);
+}
+
 function computeStats(rows: typeof bookingsTable.$inferSelect[]) {
   const totalBookings = rows.length;
   const totalPax = rows.reduce((s, b) => s + (b.paxCount ?? 0), 0);
@@ -53,10 +60,9 @@ function safeParseBreakdown(s: string | null | undefined): { mode: string; amoun
 router.get("/bookings", async (req, res) => {
   const event = (req.query.event as string) || "chetas";
   const show = req.query.show as string | undefined;
+  const date = req.query.date as string | undefined;
   try {
-    const showFilter = buildShowFilter(show);
-    const where = showFilter ? and(eq(bookingsTable.event, event), showFilter) : eq(bookingsTable.event, event);
-    const rows = await db.select().from(bookingsTable).where(where);
+    const rows = await db.select().from(bookingsTable).where(buildBookingFilter(event, show, date));
     rows.sort((a, b) => (b.createdAt?.getTime() ?? 0) - (a.createdAt?.getTime() ?? 0));
     res.json(rows);
   } catch (err) {
@@ -69,10 +75,9 @@ router.get("/bookings", async (req, res) => {
 router.get("/bookings/stats", async (req, res) => {
   const event = (req.query.event as string) || "chetas";
   const show = req.query.show as string | undefined;
+  const date = req.query.date as string | undefined;
   try {
-    const showFilter = buildShowFilter(show);
-    const where = showFilter ? and(eq(bookingsTable.event, event), showFilter) : eq(bookingsTable.event, event);
-    const rows = await db.select().from(bookingsTable).where(where);
+    const rows = await db.select().from(bookingsTable).where(buildBookingFilter(event, show, date));
     res.json(computeStats(rows));
   } catch (err) {
     console.error(err);
@@ -113,11 +118,12 @@ router.get("/bookings/shows", async (req, res) => {
 router.get("/bookings/by-table/:tableId", async (req, res) => {
   const event = (req.query.event as string) || "chetas";
   const show = req.query.show as string | undefined;
+  const date = req.query.date as string | undefined;
   try {
-    const showFilter = buildShowFilter(show);
-    const where = showFilter
-      ? and(eq(bookingsTable.tableId, req.params.tableId), eq(bookingsTable.event, event), showFilter)
-      : and(eq(bookingsTable.tableId, req.params.tableId), eq(bookingsTable.event, event));
+    const where = and(
+      eq(bookingsTable.tableId, req.params.tableId),
+      buildBookingFilter(event, show, date),
+    );
     const rows = await db.select().from(bookingsTable).where(where);
     rows.sort((a, b) => (b.createdAt?.getTime() ?? 0) - (a.createdAt?.getTime() ?? 0));
     res.json(rows[0] ?? null);
@@ -131,10 +137,9 @@ router.get("/bookings/by-table/:tableId", async (req, res) => {
 router.delete("/bookings/wipe", async (req, res) => {
   const event = (req.query.event as string) || "chetas";
   const show = req.query.show as string | undefined;
+  const date = req.query.date as string | undefined;
   try {
-    const showFilter = buildShowFilter(show);
-    const where = showFilter ? and(eq(bookingsTable.event, event), showFilter) : eq(bookingsTable.event, event);
-    await db.delete(bookingsTable).where(where);
+    await db.delete(bookingsTable).where(buildBookingFilter(event, show, date));
     res.json({ success: true });
   } catch (err) {
     console.error(err);

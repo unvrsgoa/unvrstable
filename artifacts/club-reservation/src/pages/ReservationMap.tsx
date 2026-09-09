@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import BookingModal, { type Booking } from "./BookingModal";
+import DateCalendar from "@/components/DateCalendar";
 import venueImage from "@assets/cewcw_1783598948856.png";
 import soldOutImg from "@assets/Untitled_(1)_1776301600692.png";
-
-type EventKey = "chetas" | "normal";
 
 type TableStatus = "available" | "sold_out";
 
@@ -131,8 +130,6 @@ const LAYOUT: TableDef[] = [
   { id: "rd1", label: "ROYAL\nDIAMOND 1", bgColor: "transparent", left: 282, top: 892, width: 110, height: 95 },
 ];
 
-const CHETAS_LAYOUT: TableDef[] = [];
-
 interface EditState {
   tableId: string | null;
   value: string;
@@ -140,14 +137,14 @@ interface EditState {
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
-async function fetchTables(event: string): Promise<ApiTable[]> {
-  const res = await fetch(`${BASE}/api/tables?event=${event}`);
+async function fetchTables(date: string): Promise<ApiTable[]> {
+  const res = await fetch(`${BASE}/api/tables?date=${date}`);
   if (!res.ok) throw new Error("Failed to fetch tables");
   return res.json();
 }
 
-async function patchTable(id: string, data: { status?: string; price?: string }, event: string): Promise<ApiTable> {
-  const res = await fetch(`${BASE}/api/tables/${id}?event=${event}`, {
+async function patchTable(id: string, data: { status?: string; price?: string }, date: string): Promise<ApiTable> {
+  const res = await fetch(`${BASE}/api/tables/${id}?date=${date}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -156,20 +153,13 @@ async function patchTable(id: string, data: { status?: string; price?: string },
   return res.json();
 }
 
-const EVENT_CONFIG = {
-  chetas: { label: "DJ CHETAS NIGHT", subtitle: "Special Event — Table Reservation Management" },
-  normal: { label: "NORMAL NIGHT",    subtitle: "Regular Night — Table Reservation Management" },
-} as const;
-
 interface Props {
-  event: EventKey;
-  onEventChange: (ev: EventKey) => void;
+  selectedDate: string;
+  onDateChange: (date: string) => void;
   role?: string;
-  currentShow?: string;
-  normalEventName?: string;
 }
 
-export default function ReservationMap({ event, onEventChange, role = "admin", currentShow = "Show 1", normalEventName = "Normal Night" }: Props) {
+export default function ReservationMap({ selectedDate, onDateChange, role = "admin" }: Props) {
   const [tableData, setTableData] = useState<Record<string, ApiTable>>({});
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<EditState>({ tableId: null, value: "" });
@@ -178,9 +168,9 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
   const [bookingToEdit, setBookingToEdit] = useState<Booking | null>(null);
   const [loadingEdit, setLoadingEdit] = useState(false);
 
-  const loadTables = useCallback(async (ev: EventKey) => {
+  const loadTables = useCallback(async (date: string) => {
     try {
-      const rows = await fetchTables(ev);
+      const rows = await fetchTables(date);
       const map: Record<string, ApiTable> = {};
       rows.forEach((r) => { map[r.id] = r; });
       setTableData(map);
@@ -196,10 +186,10 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
     setTableData({});
     setSelected(null);
     setEditing({ tableId: null, value: "" });
-    loadTables(event);
-    const interval = setInterval(() => loadTables(event), 5000);
+    loadTables(selectedDate);
+    const interval = setInterval(() => loadTables(selectedDate), 5000);
     return () => clearInterval(interval);
-  }, [event, loadTables]);
+  }, [selectedDate, loadTables]);
 
   const toggleStatus = async (id: string) => {
     const current = tableData[id];
@@ -207,7 +197,7 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
     const next = current.status === "available" ? "sold_out" : "available";
     setTableData((prev) => ({ ...prev, [id]: { ...current, status: next } }));
     try {
-      const updated = await patchTable(id, { status: next }, event);
+      const updated = await patchTable(id, { status: next }, selectedDate);
       setTableData((prev) => ({ ...prev, [id]: updated }));
     } catch {
       setTableData((prev) => ({ ...prev, [id]: current }));
@@ -227,10 +217,10 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
       return next;
     });
     try {
-      await Promise.all(soldIds.map((id) => patchTable(id, { status: "available" }, event)));
-      await loadTables(event);
+      await Promise.all(soldIds.map((id) => patchTable(id, { status: "available" }, selectedDate)));
+      await loadTables(selectedDate);
     } catch {
-      await loadTables(event);
+      await loadTables(selectedDate);
     }
   };
 
@@ -247,7 +237,7 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
     if (!current) return;
     setTableData((prev) => ({ ...prev, [tableId]: { ...current, price: value } }));
     try {
-      const updated = await patchTable(tableId, { price: value }, event);
+      const updated = await patchTable(tableId, { price: value }, selectedDate);
       setTableData((prev) => ({ ...prev, [tableId]: updated }));
     } catch {
       setTableData((prev) => ({ ...prev, [tableId]: current }));
@@ -263,14 +253,14 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
     if (!selected) return;
     setLoadingEdit(true);
     try {
-      const res = await fetch(`${BASE}/api/bookings/by-table/${selected}?event=${event}&show=${encodeURIComponent(currentShow)}`);
+      const res = await fetch(`${BASE}/api/bookings/by-table/${selected}?date=${selectedDate}&show=Show%201`);
       const data = await res.json();
       setBookingToEdit(data || null);
     } catch { setBookingToEdit(null); }
     finally { setLoadingEdit(false); }
   };
 
-  const activeLayout = event === "chetas" ? [...LAYOUT, ...CHETAS_LAYOUT] : LAYOUT;
+  const activeLayout = LAYOUT;
   const layoutIds = new Set(activeLayout.map((t) => t.id));
   const availableCount = Object.values(tableData).filter((t) => layoutIds.has(t.id) && t.status === "available").length;
   const soldOutCount = Object.values(tableData).filter((t) => layoutIds.has(t.id) && t.status === "sold_out").length;
@@ -291,34 +281,18 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
   return (
     <>
     <div className="min-h-screen bg-gray-100 py-6 px-4">
-      {/* Event selector */}
-      <div className="flex justify-center gap-3 mb-5">
-        <button
-          onClick={() => onEventChange("chetas")}
-          className={`px-6 py-2 rounded-full font-bold text-sm uppercase tracking-wide transition-all shadow ${
-            event === "chetas"
-              ? "bg-indigo-700 text-white shadow-indigo-300 scale-105"
-              : "bg-white text-gray-500 border border-gray-300 hover:bg-gray-50"
-          }`}
-        >
-          🎧 DJ Chetas Night
-        </button>
-        <button
-          onClick={() => onEventChange("normal")}
-          className={`px-6 py-2 rounded-full font-bold text-sm uppercase tracking-wide transition-all shadow ${
-            event === "normal"
-              ? "bg-gray-800 text-white shadow-gray-400 scale-105"
-              : "bg-white text-gray-500 border border-gray-300 hover:bg-gray-50"
-          }`}
-        >
-          🎵 {normalEventName}
-        </button>
-      </div>
-
-      <div className="text-center mb-5">
-        <p className="text-sm text-gray-500">
-          Floor Tables: Up to 6 persons &bull; Gold &amp; VIP Tables: Up to 8 persons &bull; Platinum Tables: Up to 12 persons
-        </p>
+      <div className="mx-auto mb-5 grid max-w-5xl gap-4 lg:grid-cols-[280px_1fr]">
+        <DateCalendar value={selectedDate} onChange={onDateChange} compact />
+        <div className="flex flex-col justify-center rounded-2xl border border-indigo-100 bg-indigo-50/60 px-5 py-4">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-indigo-500">Selected booking date</p>
+          <p className="mt-1 text-2xl font-black text-gray-900">
+            {new Date(`${selectedDate}T00:00:00`).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}
+          </p>
+          <p className="mt-1 text-sm text-gray-600">
+            Availability, ticket bookings, and sold-out status are tracked independently for this date.
+          </p>
+          <p className="mt-3 text-xs font-semibold text-indigo-700">{selectedDate}</p>
+        </div>
       </div>
 
       {/* Stats */}
@@ -532,8 +506,9 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
         tableId={selectedLayout.id}
         tableLabel={selectedLayout.label}
         tablePrice={selectedData.price}
-        event={event}
-        showLabel={currentShow}
+        event={selectedDate}
+        defaultBookingDate={selectedDate}
+        showLabel="Show 1"
         onClose={() => setShowBooking(false)}
         onSuccess={() => {
           setShowBooking(false);
@@ -549,8 +524,8 @@ export default function ReservationMap({ event, onEventChange, role = "admin", c
         tableId={selectedLayout.id}
         tableLabel={selectedLayout.label}
         tablePrice=""
-        event={event}
-        showLabel={currentShow}
+        event={selectedDate}
+        showLabel="Show 1"
         onClose={() => setBookingToEdit(null)}
         onSuccess={() => setBookingToEdit(null)}
       />

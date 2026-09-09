@@ -1,0 +1,1 @@
+- [API Zod export collisions](api-zod-codegen.md) — generated API schemas and generated type aliases can share names; keep the package barrel explicit when codegen introduces a collision.

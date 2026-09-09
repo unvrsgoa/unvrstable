@@ -17,6 +17,10 @@ export const HealthCheckResponse = zod.object({
 /**
  * @summary Get all tables
  */
+export const GetTablesQueryParams = zod.object({
+  date: zod.date().optional().describe("Reservation date in YYYY-MM-DD format"),
+});
+
 export const GetTablesResponseItem = zod.object({
   id: zod.string(),
   status: zod.string(),
@@ -29,6 +33,10 @@ export const GetTablesResponse = zod.array(GetTablesResponseItem);
  */
 export const UpdateTableParams = zod.object({
   id: zod.coerce.string(),
+});
+
+export const UpdateTableQueryParams = zod.object({
+  date: zod.date().optional().describe("Reservation date in YYYY-MM-DD format"),
 });
 
 export const UpdateTableBody = zod.object({

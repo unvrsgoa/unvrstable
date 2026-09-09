@@ -29,6 +29,7 @@ interface Props {
   tableLabel: string;
   tablePrice: string;
   event: string;
+  defaultBookingDate?: string;
   showLabel?: string;
   mode?: "create" | "edit";
   existingBooking?: Booking;
@@ -78,7 +79,7 @@ function Input({ value, onChange, placeholder, type = "text" }: { value: string 
 }
 
 export default function BookingModal({
-  tableId, tableLabel, tablePrice, event, showLabel,
+  tableId, tableLabel, tablePrice, event, defaultBookingDate, showLabel,
   mode = "create", existingBooking,
   onClose, onSuccess
 }: Props) {
@@ -99,7 +100,7 @@ export default function BookingModal({
   const [error, setError] = useState("");
 
   const [guestName, setGuestName] = useState(existingBooking?.guestName ?? "");
-  const [bookingDate, setBookingDate] = useState(existingBooking?.bookingDate ?? new Date().toISOString().slice(0, 10));
+  const [bookingDate, setBookingDate] = useState(existingBooking?.bookingDate ?? defaultBookingDate ?? new Date().toISOString().slice(0, 10));
   const [totalPrice, setTotalPrice] = useState(existingBooking?.totalPrice ?? parsePriceHint(tablePrice));
   const [paxCount, setPaxCount] = useState(existingBooking?.paxCount ?? 1);
   const [contactNo, setContactNo] = useState(existingBooking?.contactNo ?? "");
