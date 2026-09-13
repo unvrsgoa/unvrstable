@@ -1,1 +1,2 @@
 - [API Zod export collisions](api-zod-codegen.md) — generated API schemas and generated type aliases can share names; keep the package barrel explicit when codegen introduces a collision.
+- [Vercel build command length](vercel-deployment.md) — keep Vercel’s Build Command short by putting multi-step output preparation in a package script.
