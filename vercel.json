@@ -1,7 +1,7 @@
 {
   "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "PORT=3000 BASE_PATH=/ pnpm --filter @workspace/club-reservation run build && rm -rf dist && mkdir -p dist && cp -R artifacts/club-reservation/dist/public/. dist/",
-  "outputDirectory": "dist",
+  "buildCommand": "PORT=3000 BASE_PATH=/ pnpm --filter @workspace/club-reservation run build && rm -rf dist-vercel && mkdir -p dist-vercel && if [ -d artifacts/club-reservation/dist/public ]; then cp -R artifacts/club-reservation/dist/public/. dist-vercel/; else cp -R dist/public/. dist-vercel/; fi",
+  "outputDirectory": "dist-vercel",
   "rewrites": [
     {
       "source": "/(.*)",
