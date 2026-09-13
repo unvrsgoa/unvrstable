@@ -1,7 +1,7 @@
 {
   "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "PORT=3000 BASE_PATH=/ pnpm --filter @workspace/club-reservation run build",
-  "outputDirectory": "artifacts/club-reservation/dist/public",
+  "buildCommand": "PORT=3000 BASE_PATH=/ pnpm --filter @workspace/club-reservation run build && rm -rf dist && mkdir -p dist && cp -R artifacts/club-reservation/dist/public/. dist/",
+  "outputDirectory": "dist",
   "rewrites": [
     {
       "source": "/(.*)",
