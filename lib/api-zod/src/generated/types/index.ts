@@ -6,9 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export * from "./clubTable";
-export * from "./errorResponse";
-export * from "./getTablesParams";
-export * from "./healthStatus";
-export * from "./updateTable";
-export * from "./updateTableParams";
+export * from "./clubTable.js";
+export * from "./errorResponse.js";
+export * from "./getTablesParams.js";
+export * from "./healthStatus.js";
+export * from "./updateTable.js";
+export * from "./updateTableParams.js";
