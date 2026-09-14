@@ -1,6 +1,6 @@
 {
   "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "PORT=3000 BASE_PATH=/ pnpm --filter @workspace/club-reservation run build",
+  "buildCommand": "sh scripts/vercel-build.sh",
   "outputDirectory": "dist-vercel",
   "rewrites": [
     {
