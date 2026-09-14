@@ -26,6 +26,11 @@ if (!basePath) {
   );
 }
 
+const outputDirectory =
+  process.env.VERCEL === "1"
+    ? path.resolve(process.cwd(), "dist-vercel")
+    : path.resolve(import.meta.dirname, "dist/public");
+
 export default defineConfig({
   base: basePath,
   plugins: [
@@ -54,7 +59,7 @@ export default defineConfig({
   },
   root: path.resolve(import.meta.dirname),
   build: {
-    outDir: path.resolve(import.meta.dirname, "dist/public"),
+    outDir: outputDirectory,
     emptyOutDir: true,
   },
   server: {
